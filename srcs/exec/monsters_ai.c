@@ -1,6 +1,16 @@
-#include "cub.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monsters_ai.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/01 20:55:38 by marvin            #+#    #+#             */
+/*   Updated: 2026/05/26 09:46:15 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#define MSTR_STATE_RELOC 5
+#include "cub.h"
 
 static void	find_next_step(t_monster_rt *m, t_engine *eng, t_vec2_i size,
 				double ax, double ay, double *tx, double *ty);
@@ -11,6 +21,8 @@ static void	assign_new_patrol_target(t_monster_rt *m, int self_idx,
 static int	is_bottleneck_cell(t_engine *eng, int x, int y);
 static void	execute_slr_transition(t_engine *eng, t_monster_rt *m,
 				char *stim);
+static void	execute_slr_transition_by_id(t_engine *eng, t_monster_rt *m,
+				int sym_nbr);
 
 static int	is_player_in_light(t_player_rt *p, t_engine *eng)
 {
@@ -642,16 +654,30 @@ static void	assign_new_patrol_target(t_monster_rt *m, int self_idx,
 
 static int	state_name_to_id(char *name)
 {
-	if (ft_strcmp(name, "patrol_state") == 0)
+	if (ft_strcmp(name, "patrol_state") == 0
+		|| ft_strcmp(name, "patrol_loop") == 0
+		|| ft_strcmp(name, "patrol_action") == 0)
 		return (MSTR_STATE_PATROL);
-	if (ft_strcmp(name, "chase_state") == 0)
+	if (ft_strcmp(name, "chase_state") == 0
+		|| ft_strcmp(name, "chase_session") == 0
+		|| ft_strcmp(name, "chase_loop") == 0
+		|| ft_strcmp(name, "chase_action") == 0
+		|| ft_strcmp(name, "ACT_SET_CHASE") == 0)
 		return (MSTR_STATE_CHASE);
-	if (ft_strcmp(name, "attack_state") == 0)
+	if (ft_strcmp(name, "attack_state") == 0
+		|| ft_strcmp(name, "ACT_SET_ATTACK") == 0)
 		return (MSTR_STATE_ATTACK);
-	if (ft_strcmp(name, "scan_state") == 0)
+	if (ft_strcmp(name, "scan_state") == 0
+		|| ft_strcmp(name, "ACT_SET_SCAN") == 0)
 		return (MSTR_STATE_SCAN);
-	if (ft_strcmp(name, "reloc_state") == 0)
+	if (ft_strcmp(name, "reloc_state") == 0
+		|| ft_strcmp(name, "ACT_SET_RELOC") == 0)
 		return (MSTR_STATE_RELOC);
+	if (ft_strcmp(name, "alarm_subroutine") == 0
+		|| ft_strcmp(name, "alarm_session") == 0
+		|| ft_strcmp(name, "alarm_loop") == 0
+		|| ft_strcmp(name, "alarm_action") == 0)
+		return (MSTR_STATE_ALARM);
 	return (-1);
 }
 
@@ -709,11 +735,11 @@ static int	get_fsm_state_from_slr_state(t_engine *eng, int slr_state_id)
 	return (MSTR_STATE_PATROL);
 }
 
-
 static void	reset_stack(t_monster_rt *m)
 {
 	m->state_stack[0] = 0;
 	m->state_stack_top = 1;
+	m->state = MSTR_STATE_PATROL;
 }
 
 static void	handle_slr_reduction(t_engine *eng, t_monster_rt *m, int rule_id)
@@ -722,6 +748,7 @@ static void	handle_slr_reduction(t_engine *eng, t_monster_rt *m, int rule_id)
 	t_symbol	*left;
 	int			curr;
 	int			val;
+
 	r_node = eng->slr->rules;
 	while (r_node)
 	{
@@ -745,32 +772,50 @@ static void	handle_slr_reduction(t_engine *eng, t_monster_rt *m, int rule_id)
 	}
 }
 
+static void	apply_slr_shift(t_engine *eng, t_monster_rt *m, int action)
+{
+	if (m->state_stack_top < 32)
+	{
+		m->state_stack[m->state_stack_top++] = action;
+		m->state = get_fsm_state_from_slr_state(eng, action);
+	}
+}
+
+static void	execute_slr_transition_by_id(t_engine *eng, t_monster_rt *m,
+				int sym_nbr)
+{
+	int	action;
+
+	while (1)
+	{
+		if (m->state_stack_top < 1 || m->state_stack_top > 32)
+			reset_stack(m);
+		action = eng->slr->table[m->state_stack[m->state_stack_top - 1]][sym_nbr];
+		if (action == ACCEPTED)
+		{
+			reset_stack(m);
+			break ;
+		}
+		if (action == 0)
+			break ;
+		if (action > 0)
+		{
+			apply_slr_shift(eng, m, action);
+			break ;
+		}
+		handle_slr_reduction(eng, m, -action);
+	}
+}
+
 static void	execute_slr_transition(t_engine *eng, t_monster_rt *m,
 				char *stim)
 {
 	t_symbol	*sym;
-	int			action;
-	int			curr;
 
 	sym = get_symbol_from_name(eng->slr, stim);
 	if (!sym)
 		return ;
-	if (m->state_stack_top < 1 || m->state_stack_top > 32)
-		reset_stack(m);
-	curr = m->state_stack[m->state_stack_top - 1];
-	action = eng->slr->table[curr][sym->nbr];
-	if (action == 0)
-		return ;
-	if (action > 0 && action != ACCEPTED)
-	{
-		if (m->state_stack_top < 32)
-		{
-			m->state_stack[m->state_stack_top++] = action;
-			m->state = get_fsm_state_from_slr_state(eng, action);
-		}
-	}
-	else if (action < 0)
-		handle_slr_reduction(eng, m, -action);
+	execute_slr_transition_by_id(eng, m, sym->nbr);
 }
 
 static int	is_dest_reached(t_monster_rt *m)
@@ -788,10 +833,7 @@ static void	patrol_transitions(t_monster_rt *m, t_engine *eng, int spotted)
 	if (spotted)
 		execute_slr_transition(eng, m, "STIM_LOS_TRUE");
 	else if (check_monster_self_collision(m, eng))
-	{
 		execute_slr_transition(eng, m, "STIM_COLLISION");
-		m->state = MSTR_STATE_RELOC;
-	}
 	else if (is_dest_reached(m))
 	{
 		if (is_bottleneck_cell(eng, (int)m->guard_x, (int)m->guard_y))
@@ -818,16 +860,77 @@ static void	scan_transitions(t_monster_rt *m, t_engine *eng, int spotted)
 	if (spotted)
 		execute_slr_transition(eng, m, "STIM_LOS_TRUE");
 	else if (m->alert_timer > 120)
-	{
 		execute_slr_transition(eng, m, "STIM_ALERT_TIMEOUT");
-		m->state = MSTR_STATE_RELOC;
-	}
 }
 
-static void	run_grammar_transitions(t_monster_rt *m, int self_idx,
-				t_engine *eng, double d2, int spotted)
+static void	bind_behavior_to_state(t_slr1 *slr, int state_id, t_behavior_fn func)
 {
-	(void)self_idx;
+	slr->state_behaviors[state_id] = func;
+}
+
+void	mstr_patrol_behavior(t_monster_rt *m, t_engine *eng)
+{
+	t_vec2_i	size;
+	int			self_idx;
+
+	size.x = get_map_width(get_blob_hdr(eng->blob));
+	size.y = get_map_height(get_blob_hdr(eng->blob));
+	self_idx = m - get_monster_rt(eng->blob);
+	mstr_go_to_guard(m, self_idx, eng, (m->alert_timer++, size));
+}
+
+void	mstr_chase_behavior(t_monster_rt *m, t_engine *eng)
+{
+	t_vec2_i	size;
+	int			self_idx;
+
+	size.x = get_map_width(get_blob_hdr(eng->blob));
+	size.y = get_map_height(get_blob_hdr(eng->blob));
+	self_idx = m - get_monster_rt(eng->blob);
+	if (!detect_player(m, eng))
+		m->alert_timer++;
+	mstr_chase(m, self_idx, eng, size);
+}
+
+void	mstr_scan_behavior(t_monster_rt *m, t_engine *eng)
+{
+	double	old;
+
+	(void)eng;
+	m->alert_timer++;
+	old = m->dir.x;
+	m->dir.x = m->dir.x * cos(0.04) - m->dir.y * sin(0.04);
+	m->dir.y = old * sin(0.04) + m->dir.y * cos(0.04);
+}
+
+void	mstr_reloc_behavior(t_monster_rt *m, t_engine *eng)
+{
+	int	self_idx;
+
+	self_idx = m - get_monster_rt(eng->blob);
+	assign_new_patrol_target(m, self_idx, eng);
+	m->alert_timer = 0;
+	execute_slr_transition(eng, m, "ACT_RECALCULATE_PATROL");
+}
+
+void	mstr_alarm_behavior(t_monster_rt *m, t_engine *eng)
+{
+	t_vec2_i	size;
+	int			self_idx;
+	double		ax;
+	double		ay;
+
+	size.x = get_map_width(get_blob_hdr(eng->blob));
+	size.y = get_map_height(get_blob_hdr(eng->blob));
+	self_idx = m - get_monster_rt(eng->blob);
+	find_closest_alarm(m, eng, &ax, &ay);
+	if (ax >= 0.0)
+		mstr_go_to_alarm(m, self_idx, eng, size, ax, ay);
+}
+
+static void	run_grammar_transitions(t_monster_rt *m, t_engine *eng,
+				double d2, int spotted)
+{
 	if (m->state == MSTR_STATE_PATROL)
 		patrol_transitions(m, eng, spotted);
 	else if (m->state == MSTR_STATE_CHASE)
@@ -836,56 +939,114 @@ static void	run_grammar_transitions(t_monster_rt *m, int self_idx,
 		execute_slr_transition(eng, m, "ACT_CHASE_MOVE");
 	else if (m->state == MSTR_STATE_SCAN)
 		scan_transitions(m, eng, spotted);
+	else if (m->state == MSTR_STATE_ALARM && spotted)
+		execute_slr_transition(eng, m, "STIM_LOS_TRUE");
 }
 
-static void	reloc_monster(t_monster_rt *m, int self_idx, t_engine *eng)
+static void	bind_state_behavior(t_engine *eng, t_state *s)
 {
-	assign_new_patrol_target(m, self_idx, eng);
-	m->alert_timer = 0;
-	execute_slr_transition(eng, m, "ACT_RECALCULATE_PATROL");
+	int	fsm_state;
+
+	fsm_state = get_fsm_state_from_slr_state(eng, s->id);
+	if (fsm_state == MSTR_STATE_PATROL)
+		bind_behavior_to_state(eng->slr, s->id, &mstr_patrol_behavior);
+	else if (fsm_state == MSTR_STATE_CHASE)
+		bind_behavior_to_state(eng->slr, s->id, &mstr_chase_behavior);
+	else if (fsm_state == MSTR_STATE_SCAN)
+		bind_behavior_to_state(eng->slr, s->id, &mstr_scan_behavior);
+	else if (fsm_state == MSTR_STATE_RELOC)
+		bind_behavior_to_state(eng->slr, s->id, &mstr_reloc_behavior);
+	else if (fsm_state == MSTR_STATE_ALARM)
+		bind_behavior_to_state(eng->slr, s->id, &mstr_alarm_behavior);
 }
 
-static void	handle_monster_states(t_monster_rt *m, int self_idx,
-				t_engine *eng, t_vec2_i size)
+static void	resolve_auto_act_nbrs(t_slr1 *slr)
 {
-	double	old;
+	static char	*acts[AUTO_ACTS_COUNT] = {
+		"ACT_START_CHASE", "ACT_RESUME_PATROL",
+		"ACT_GO_TO_ALARM", "ACT_RESUME_PREVIOUS",
+		"ACT_SET_RELOC", "ACT_SET_ATTACK", "ACT_SET_CHASE",
+		"ACT_MELEE_STRIKE", "ACT_CHASE_MOVE", "ACT_RECALCULATE_PATROL"
+	};
+	int			i;
+	t_symbol	*sym;
 
-	if (m->state == MSTR_STATE_PATROL)
-		mstr_go_to_guard(m, self_idx, eng, (m->alert_timer++, size));
-	else if (m->state == MSTR_STATE_CHASE)
+	i = 0;
+	while (i < AUTO_ACTS_COUNT)
 	{
-		if (!detect_player(m, eng))
-			m->alert_timer++;
-		mstr_chase(m, self_idx, eng, size);
+		sym = get_symbol_from_name(slr, acts[i]);
+		if (sym)
+			slr->auto_act_nbrs[i] = sym->nbr;
+		else
+			slr->auto_act_nbrs[i] = -1;
+		i++;
 	}
-	else if (m->state == MSTR_STATE_SCAN)
+	sym = get_symbol_from_name(slr, "STIM_ALARM_HEARD");
+	slr->stim_alarm_heard_nbr = sym ? sym->nbr : -1;
+	sym = get_symbol_from_name(slr, "STIM_ALARM_OFF");
+	slr->stim_alarm_off_nbr = sym ? sym->nbr : -1;
+}
+
+void	init_all_ai_behaviors(t_slr1 *slr, t_engine *eng)
+{
+	t_list	*state_node;
+	int		nb_states;
+
+	resolve_auto_act_nbrs(slr);
+	nb_states = ft_lstsize(slr->states);
+	slr->state_behaviors = malloc(sizeof(t_behavior_fn) * nb_states);
+	if (!slr->state_behaviors)
+		return ;
+	ft_bzero(slr->state_behaviors, sizeof(t_behavior_fn) * nb_states);
+	state_node = slr->states;
+	while (state_node)
 	{
-		m->alert_timer++;
-		old = m->dir.x;
-		m->dir.x = m->dir.x * cos(0.04) - m->dir.y * sin(0.04);
-		m->dir.y = old * sin(0.04) + m->dir.y * cos(0.04);
+		bind_state_behavior(eng, (t_state *)state_node->content);
+		state_node = state_node->next;
 	}
-	else if (m->state == MSTR_STATE_RELOC)
-		reloc_monster(m, self_idx, eng);
+}
+
+static void	handle_auto_actions(t_engine *eng, t_monster_rt *m)
+{
+	int	curr;
+	int	i;
+	int	act_nbr;
+	int	action;
+
+	i = -1;
+	while (++i < AUTO_ACTS_COUNT)
+	{
+		act_nbr = eng->slr->auto_act_nbrs[i];
+		if (act_nbr >= 0)
+		{
+			curr = m->state_stack[m->state_stack_top - 1];
+			action = eng->slr->table[curr][act_nbr];
+			if (action != 0 && action != ACCEPTED)
+				execute_slr_transition_by_id(eng, m, act_nbr);
+		}
+	}
 }
 
 static void	update_single_monster(t_monster_rt *m, int self_idx,
-				t_engine *eng, t_vec2_i size)
+				t_engine *eng)
 {
-	double	d2;
-	double	ax;
-	double	ay;
+	double			d2;
+	int				is_in_alarm;
+	t_behavior_fn	behavior;
 
-	if (eng->alarm_triggered)
-	{
-		find_closest_alarm(m, eng, &ax, &ay);
-		if (ax >= 0.0)
-			return (mstr_go_to_alarm(m, self_idx, eng, size, ax, ay));
-	}
+	(void)self_idx;
 	d2 = (eng->player->pos.x - m->pos.x) * (eng->player->pos.x - m->pos.x)
 		+ (eng->player->pos.y - m->pos.y) * (eng->player->pos.y - m->pos.y);
-	run_grammar_transitions(m, self_idx, eng, d2, detect_player(m, eng));
-	handle_monster_states(m, self_idx, eng, size);
+	is_in_alarm = (m->state == MSTR_STATE_ALARM);
+	if (eng->alarm_triggered && !is_in_alarm)
+		execute_slr_transition_by_id(eng, m, eng->slr->stim_alarm_heard_nbr);
+	else if (!eng->alarm_triggered && is_in_alarm)
+		execute_slr_transition_by_id(eng, m, eng->slr->stim_alarm_off_nbr);
+	handle_auto_actions(eng, m);
+	run_grammar_transitions(m, eng, d2, detect_player(m, eng));
+	behavior = eng->slr->state_behaviors[m->state_stack[m->state_stack_top - 1]];
+	if (behavior)
+		behavior(m, eng);
 }
 
 static void	print_monsters_debug(t_monster_rt *mstr, int count)
@@ -905,7 +1066,6 @@ static void	print_monsters_debug(t_monster_rt *mstr, int count)
 void	update_monsters(t_engine *eng)
 {
 	t_monster_rt	*mstr;
-	t_vec2_i		size;
 	int				i;
 	static int		frame = 0;
 
@@ -914,13 +1074,11 @@ void	update_monsters(t_engine *eng)
 	mstr = get_monster_rt(eng->blob);
 	if (!mstr[0].has_guard_pos)
 		init_monster_targets(eng);
-	size.x = get_map_width(get_blob_hdr(eng->blob));
-	size.y = get_map_height(get_blob_hdr(eng->blob));
 	i = -1;
 	while (++i < eng->data->monster_rt_count)
 	{
 		if (!(mstr[i].flags & MONSTER_DEAD))
-			update_single_monster(&mstr[i], i, eng, size);
+			update_single_monster(&mstr[i], i, eng);
 	}
 	frame++;
 	if (frame % 60 == 0)

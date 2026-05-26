@@ -238,6 +238,8 @@ void    free_all(t_slr1 *data, int **table)
 	free_rules(data->rules);
 	free_symbols(data->symbols);
 	free_states(data->states);
+	if (data->state_behaviors)
+		free(data->state_behaviors);
 	free(data);
 }
 
@@ -745,22 +747,20 @@ void	fill_table_when_reduce(t_slr1 *data, int ***table, t_list *state,
 {
 	t_rule		*rule;
 	t_symbol	*symbol;
-	t_list		*follow;
-	t_item		*it;
+	t_list		*sym_node;
 	int			sid;
 
-	it = (t_item *)item->content;
-	rule = it->rule_of_item;
-	follow = get_symbol_from_name(data, rule->left_symbol)->follows;
+	rule = ((t_item *)item->content)->rule_of_item;
 	sid = ((t_state *)state->content)->id;
-	while (follow)
+	sym_node = data->symbols;
+	while (sym_node)
 	{
-		symbol = get_symbol_from_name(data, (char *)follow->content);
+		symbol = (t_symbol *)sym_node->content;
 		if (rule->id == 1 && !ft_strcmp(symbol->name, "$"))
 			(*table)[sid][symbol->nbr] = ACCEPTED;
-		else
+		else if ((*table)[sid][symbol->nbr] == 0)
 			(*table)[sid][symbol->nbr] = -(rule->id);
-		follow = follow->next;
+		sym_node = sym_node->next;
 	}
 }
 

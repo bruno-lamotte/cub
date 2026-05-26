@@ -264,12 +264,22 @@ typedef struct s_transition
 	t_state			*dest_state;
 }				t_transition;
 
+struct s_engine;
+struct s_monster_rt;
+typedef void (*t_behavior_fn)(struct s_monster_rt *, struct s_engine *);
+
+#define AUTO_ACTS_COUNT 10
+
 typedef struct s_slr1
 {
 	t_list			*rules;
 	t_list			*symbols;
 	t_list			*states;
 	int				**table;
+	t_behavior_fn	*state_behaviors;
+	int				auto_act_nbrs[AUTO_ACTS_COUNT];
+	int				stim_alarm_heard_nbr;
+	int				stim_alarm_off_nbr;
 }				t_slr1;
 
 typedef struct s_reduce_rule
@@ -366,7 +376,7 @@ void draw_tex_lib(t_screen *s, t_data *d);
 /*BLOB*/
 
 #define DIST_MAX 1024
-#define GAMMA 1.0f
+#define GAMMA 2.0f
 
 typedef struct s_lut
 {
@@ -472,6 +482,8 @@ typedef struct	s_map_soa
 # define MSTR_STATE_CHASE		2
 # define MSTR_STATE_ATTACK		3
 # define MSTR_STATE_SCAN		4
+# define MSTR_STATE_RELOC		5
+# define MSTR_STATE_ALARM		6
 
 typedef struct	s_monster_rt
 {
@@ -842,6 +854,7 @@ void		update_global_alarm_state(t_engine *eng);
 
 // srcs/exec/monsters_ai.c
 void		update_monsters(t_engine *engine);
+void		init_all_ai_behaviors(t_slr1 *slr, t_engine *eng);
 
 // srcs/exec/monsters_render.c
 void		draw_monsters_3d(t_engine *eng);

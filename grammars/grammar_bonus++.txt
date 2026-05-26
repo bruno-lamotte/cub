@@ -1,11 +1,16 @@
-monster_lifecycle: patrol_state
+monster_lifecycle: patrol_loop
+patrol_loop: patrol_state
+alarm_subroutine: ACT_GO_TO_ALARM STIM_ALARM_OFF
+| STIM_LOS_TRUE chase_state
 patrol_state: STIM_LOS_TRUE chase_state
 | STIM_COLLISION reloc_state
 | STIM_ALERT_TIMEOUT reloc_state
 | STIM_STATION_TIMEOUT reloc_state
+| STIM_ALARM_HEARD alarm_subroutine ACT_RESUME_PATROL
 chase_state: STIM_LOS_FALSE scan_state
 | ACT_MELEE_STRIKE attack_state
-attack_state: ACT_CHASE_MOVE chase_state
+attack_state: ACT_CHASE_MOVE
 scan_state: STIM_LOS_TRUE chase_state
 | STIM_ALERT_TIMEOUT reloc_state
-reloc_state: ACT_RECALCULATE_PATROL patrol_state
+| STIM_ALARM_HEARD alarm_subroutine ACT_RESUME_PATROL
+reloc_state: ACT_RECALCULATE_PATROL

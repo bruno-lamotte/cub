@@ -69,6 +69,8 @@ int main(int ac, char **av)
 		engine->slr->table = create_parsing_table(engine->slr);
 		if (!engine->slr->table)
 			printf("Failed to generate SLR(1) parsing table\n");
+		else
+			init_all_ai_behaviors(engine->slr, engine);
 	}
 
 	// register hooks
