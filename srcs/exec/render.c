@@ -316,6 +316,208 @@ static void	draw_all_entities(t_engine *engine)
 	draw_hacking_overlay(engine);
 }
 
+static void	draw_rect(t_img *img, int x, int y, int w, int h, int color)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	while (++i < h)
+	{
+		j = -1;
+		while (++j < w)
+		{
+			if (x + j >= 0 && x + j < WINDOW_WIDTH && y + i >= 0 && y + i < WINDOW_HEIGHT)
+				put_pixel(img, x + j, y + i, color);
+		}
+	}
+}
+
+static void	draw_circle_outline(t_img *img, int cx, int cy, int r, int color)
+{
+	int	x;
+	int	y;
+
+	y = -r - 1;
+	while (++y <= r)
+	{
+		x = -r - 1;
+		while (++x <= r)
+		{
+			if (x * x + y * y >= (r - 2) * (r - 2) && x * x + y * y <= r * r)
+			{
+				if (cx + x >= 0 && cx + x < WINDOW_WIDTH && cy + y >= 0 && cy + y < WINDOW_HEIGHT)
+					put_pixel(img, cx + x, cy + y, color);
+			}
+		}
+	}
+}
+
+static void	draw_filled_circle(t_img *img, int cx, int cy, int r, int color)
+{
+	int	x;
+	int	y;
+
+	y = -r - 1;
+	while (++y <= r)
+	{
+		x = -r - 1;
+		while (++x <= r)
+		{
+			if (x * x + y * y <= r * r)
+			{
+				if (cx + x >= 0 && cx + x < WINDOW_WIDTH && cy + y >= 0 && cy + y < WINDOW_HEIGHT)
+					put_pixel(img, cx + x, cy + y, color);
+			}
+		}
+	}
+}
+
+static void	draw_single_map_obj(t_engine *eng, t_interact_obj *obj, t_vec2_i p, int is_sel)
+{
+	t_door_rt	*doors;
+	int			color;
+
+	doors = get_door_rt(eng->blob);
+	if (obj->is_door)
+	{
+		if (doors[obj->idx].flags & DOOR_BLOCKED)
+			color = 0xFF3300;
+		else
+			color = 0x33FF33;
+		draw_rect(&eng->screen->img2, p.x - 5, p.y - 5, 10, 10, color);
+	}
+	else
+	{
+		if (eng->static_lights[obj->idx].is_triggered)
+			color = 0xFF0055;
+		else
+			color = 0xFFFF00;
+		draw_filled_circle(&eng->screen->img2, p.x, p.y, 5, color);
+	}
+	if (is_sel)
+		draw_circle_outline(&eng->screen->img2, p.x, p.y, 12, 0xFFFFFF);
+}
+
+static double	get_terminal_map_px_per_tile(t_engine *eng, int radius)
+{
+	int				i;
+	t_interact_obj	*obj;
+	double			dx;
+	double			dy;
+	double			dist;
+	double			max_dist;
+	double			px_per_tile;
+
+	max_dist = 0.0;
+	i = -1;
+	while (++i < eng->interact_obj_count)
+	{
+		obj = &eng->interact_objs[i];
+		dx = obj->x - eng->player->pos.x;
+		dy = obj->y - eng->player->pos.y;
+		dist = sqrt(dx * dx + dy * dy);
+		if (dist > max_dist)
+			max_dist = dist;
+	}
+	px_per_tile = 25.0;
+	if (max_dist > 0.001)
+	{
+		px_per_tile = (double)(radius - 20) / max_dist;
+		if (px_per_tile > 25.0)
+			px_per_tile = 25.0;
+	}
+	return (px_per_tile);
+}
+
+static void	draw_terminal_map_objects(t_engine *eng, int cx, int cy)
+{
+	int				i;
+	t_vec2_i		p;
+	t_interact_obj	*obj;
+	int				radius;
+	double			px_per_tile;
+
+	radius = 196;
+	px_per_tile = get_terminal_map_px_per_tile(eng, radius);
+	i = -1;
+	while (++i < eng->interact_obj_count)
+	{
+		obj = &eng->interact_objs[i];
+		p.x = cx + (int)((obj->x - eng->player->pos.x) * px_per_tile);
+		p.y = cy + (int)((obj->y - eng->player->pos.y) * px_per_tile);
+		if ((p.x - cx) * (p.x - cx)
+			+ (p.y - cy) * (p.y - cy) <= radius * radius)
+			draw_single_map_obj(eng, obj, p, eng->selected_obj_idx == i);
+	}
+}
+
+void	draw_terminal_hacking_screen(t_engine *eng)
+{
+	int	cx;
+	int	cy;
+
+	cx = WINDOW_WIDTH / 2;
+	cy = WINDOW_HEIGHT / 2;
+	draw_filled_circle(&eng->screen->img2, cx, cy, 200, 0x000F05);
+	draw_circle_outline(&eng->screen->img2, cx, cy, 200, 0x00FF33);
+	draw_filled_circle(&eng->screen->img2, cx, cy, 5, 0x00FFFF);
+	draw_terminal_map_objects(eng, cx, cy);
+}
+
+static void	draw_selected_info_text(t_engine *eng, int cx, int cy)
+{
+	t_interact_obj	*obj;
+	t_door_rt		*doors;
+	int				x;
+
+	x = cx + 250;
+	if (eng->interact_obj_count <= 0)
+	{
+		mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 60, 0xFF3300, "NO TARGETS DETECTED");
+		return ;
+	}
+	obj = &eng->interact_objs[eng->selected_obj_idx];
+	mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 100, 0x00FF33, "--- TARGET METADATA ---");
+	if (obj->is_door)
+	{
+		doors = get_door_rt(eng->blob);
+		mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 60, 0x00FF33, "TYPE: SECURE AREA DOOR");
+		if (doors[obj->idx].flags & DOOR_BLOCKED)
+			mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 30, 0xFF3300, "STATUS: BLOCKED (SECURE)");
+		else
+			mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 30, 0x33FF33, "STATUS: UNLOCKED (CLEARED)");
+	}
+	else
+	{
+		mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 60, 0x00FF33, "TYPE: ZONE ALARM SOURCE");
+		if (eng->static_lights[obj->idx].is_triggered)
+			mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 30, 0xFF0055, "STATUS: DURESS ALARM ON!");
+		else
+			mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr, x, cy - 30, 0x33FF33, "STATUS: ALARM INACTIVE");
+	}
+}
+
+void	draw_terminal_hacking_text(t_engine *eng)
+{
+	int	cx;
+	int	cy;
+
+	cx = WINDOW_WIDTH / 2;
+	cy = WINDOW_HEIGHT / 2;
+	mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
+		50, cy - 100, 0x00FF33, "=== TERMINAL DECRYPTION LINK ===");
+	mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
+		50, cy - 60, 0x00FF33, "Controls:");
+	mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
+		50, cy - 30, 0x00FF33, "  [A / D] or [Arrows] : Select target");
+	mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
+		50, cy, 0x00FF33, "  [E] or [Space] : Toggle target status");
+	mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
+		50, cy + 30, 0x00FF33, "  [Escape] : Close link");
+	draw_selected_info_text(eng, cx, cy);
+}
+
 void	render_frame(t_engine *engine)
 {
 	t_thread_pool	*pool;
@@ -334,10 +536,19 @@ void	render_frame(t_engine *engine)
 	temp = screen->img;
 	screen->img = screen->img2;
 	screen->img2 = temp;
-	draw_all_entities(engine);
+	if (engine->terminal_mode)
+	{
+		ft_bzero(screen->img2.addr, WINDOW_WIDTH * WINDOW_HEIGHT * (screen->img2.bpp / 8));
+		draw_terminal_hacking_screen(engine);
+	}
+	else
+		draw_all_entities(engine);
 	mlx_put_image_to_window(screen->mlx_ptr, screen->win_ptr,
 		screen->img2.img_ptr, 0, 0);
-	draw_hacking_text(engine);
+	if (engine->terminal_mode)
+		draw_terminal_hacking_text(engine);
+	else
+		draw_hacking_text(engine);
 	display_fps(engine);
 	mlx_do_sync(screen->mlx_ptr);
 }

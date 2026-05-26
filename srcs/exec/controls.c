@@ -31,8 +31,96 @@ int	close_window(t_engine *engine)
 	return (0);
 }
 
+static void	trigger_selected_obj(t_engine *eng)
+{
+	t_interact_obj	*obj;
+	t_door_rt		*doors;
+
+	if (eng->interact_obj_count <= 0)
+		return ;
+	obj = &eng->interact_objs[eng->selected_obj_idx];
+	if (obj->is_door)
+	{
+		doors = get_door_rt(eng->blob);
+		doors[obj->idx].flags ^= DOOR_BLOCKED;
+	}
+	else
+	{
+		eng->static_lights[obj->idx].is_triggered ^= 1;
+		update_global_alarm_state(eng);
+	}
+}
+
+static void	init_terminal_mode(t_engine *eng)
+{
+	int			i;
+	t_door_rt	*doors;
+	int			count;
+	int			w;
+
+	eng->terminal_mode = 1;
+	eng->selected_obj_idx = 0;
+	eng->interact_obj_count = 0;
+	i = -1;
+	while (++i < eng->static_light_count)
+	{
+		if (eng->interact_obj_count >= 64)
+			break ;
+		if (eng->static_lights[i].is_alarm)
+		{
+			eng->interact_objs[eng->interact_obj_count].is_door = 0;
+			eng->interact_objs[eng->interact_obj_count].idx = i;
+			eng->interact_objs[eng->interact_obj_count].x = eng->static_lights[i].x;
+			eng->interact_objs[eng->interact_obj_count].y = eng->static_lights[i].y;
+			eng->interact_obj_count++;
+		}
+	}
+	doors = get_door_rt(eng->blob);
+	count = get_blob_hdr(eng->blob)->door_rt.count;
+	w = get_map_width(get_blob_hdr(eng->blob));
+	i = -1;
+	while (++i < count)
+	{
+		if (eng->interact_obj_count >= 64)
+			break ;
+		eng->interact_objs[eng->interact_obj_count].is_door = 1;
+		eng->interact_objs[eng->interact_obj_count].idx = i;
+		eng->interact_objs[eng->interact_obj_count].x = (doors[i].map_id % w)
+			+ 0.5;
+		eng->interact_objs[eng->interact_obj_count].y = (doors[i].map_id / w)
+			+ 0.5;
+		eng->interact_obj_count++;
+	}
+}
+
+static int	handle_terminal_key(int keycode, t_engine *engine)
+{
+	if (keycode == XK_Escape)
+		engine->terminal_mode = 0;
+	else if (keycode == XK_Left || keycode == XK_a || keycode == 'a' || keycode == 'A')
+	{
+		if (engine->interact_obj_count > 0)
+			engine->selected_obj_idx = (engine->selected_obj_idx - 1
+					+ engine->interact_obj_count) % engine->interact_obj_count;
+	}
+	else if (keycode == XK_Right || keycode == XK_d || keycode == 'd' || keycode == 'D')
+	{
+		if (engine->interact_obj_count > 0)
+			engine->selected_obj_idx = (engine->selected_obj_idx + 1)
+				% engine->interact_obj_count;
+	}
+	else if (keycode == 'e' || keycode == 'E' || keycode == ' ')
+	{
+		trigger_selected_obj(engine);
+		engine->terminal_mode = 0;
+	}
+	return (0);
+}
+
 int	key_press(int keycode, t_engine *engine)
 {
+	if (engine->terminal_mode)
+		return (handle_terminal_key(keycode, engine));
 	if (keycode == XK_w || keycode == 'w' || keycode == 'W'
 		|| keycode == XK_z || keycode == 'z' || keycode == 'Z')
 		engine->keys.w = true;
@@ -75,58 +163,6 @@ int	key_release(int keycode, t_engine *engine)
 	return (0);
 }
 
-static t_light	*find_closest_alarm(t_engine *eng, double tx, double ty,
-				double *min_dist)
-{
-	int			i;
-	t_light		*closest;
-	double		d;
-
-	closest = NULL;
-	i = -1;
-	while (++i < eng->static_light_count)
-	{
-		if (!eng->static_lights[i].is_alarm)
-			continue ;
-		d = (eng->static_lights[i].x - tx) * (eng->static_lights[i].x - tx)
-			+ (eng->static_lights[i].y - ty) * (eng->static_lights[i].y - ty);
-		if (d < *min_dist)
-		{
-			*min_dist = d;
-			closest = &eng->static_lights[i];
-		}
-	}
-	return (closest);
-}
-
-static t_door_rt	*find_closest_door(t_engine *eng, double tx, double ty,
-				double *min_dist)
-{
-	int			i;
-	t_door_rt	*doors;
-	t_door_rt	*closest;
-	int			w;
-	double		d;
-
-	doors = get_door_rt(eng->blob);
-	w = get_map_width(get_blob_hdr(eng->blob));
-	closest = NULL;
-	i = -1;
-	while (++i < (int)get_blob_hdr(eng->blob)->door_rt.count)
-	{
-		d = ((doors[i].map_id % w) + 0.5 - tx)
-			* ((doors[i].map_id % w) + 0.5 - tx)
-			+ ((doors[i].map_id / w) + 0.5 - ty)
-			* ((doors[i].map_id / w) + 0.5 - ty);
-		if (d < *min_dist)
-		{
-			*min_dist = d;
-			closest = &doors[i];
-		}
-	}
-	return (closest);
-}
-
 void	update_global_alarm_state(t_engine *eng)
 {
 	int	i;
@@ -142,24 +178,6 @@ void	update_global_alarm_state(t_engine *eng)
 			break ;
 		}
 	}
-}
-
-static void	toggle_terminal_target(t_engine *eng, double tx, double ty)
-{
-	double		d_alarm;
-	double		d_door;
-	t_light		*closest_alarm;
-	t_door_rt	*closest_door;
-
-	d_alarm = 1e30;
-	d_door = 1e30;
-	closest_alarm = find_closest_alarm(eng, tx, ty, &d_alarm);
-	closest_door = find_closest_door(eng, tx, ty, &d_door);
-	if (closest_door && d_door < d_alarm)
-		closest_door->flags ^= DOOR_BLOCKED;
-	else if (closest_alarm)
-		closest_alarm->is_triggered ^= 1;
-	update_global_alarm_state(eng);
 }
 
 static int	is_near_t(t_engine *eng, int x, int y,
@@ -194,9 +212,7 @@ static void	check_proximity(t_engine *eng, int w, int h, uint8_t *flags)
 		{
 			if (is_near_t(eng, x, y, flags, occ))
 			{
-				eng->hacking_timer = 90;
-				eng->hacking_x = x + 0.5;
-				eng->hacking_y = y + 0.5;
+				init_terminal_mode(eng);
 				eng->keys.e = false;
 				return ;
 			}
@@ -206,19 +222,17 @@ static void	check_proximity(t_engine *eng, int w, int h, uint8_t *flags)
 
 static void	update_interaction(t_engine *eng)
 {
-	if (eng->hacking_timer > 0)
-	{
-		if (--eng->hacking_timer == 0)
-			toggle_terminal_target(eng, eng->hacking_x, eng->hacking_y);
-		eng->keys.e = false;
-		return ;
-	}
 	if (eng->keys.e)
 	{
 		eng->keys.e = false;
-		check_proximity(eng, get_map_width(get_blob_hdr(eng->blob)),
-			get_map_height(get_blob_hdr(eng->blob)),
-			get_map_flags(eng->blob));
+		if (eng->terminal_mode)
+			eng->terminal_mode = 0;
+		else
+		{
+			check_proximity(eng, get_map_width(get_blob_hdr(eng->blob)),
+				get_map_height(get_blob_hdr(eng->blob)),
+				get_map_flags(eng->blob));
+		}
 	}
 }
 
@@ -232,7 +246,7 @@ int	game_loop(t_engine *engine)
 	update_doors(engine);
 	update_interaction(engine);
 	update_monsters(engine);
-	if (engine->hacking_timer <= 0)
+	if (engine->hacking_timer <= 0 && !engine->terminal_mode)
 	{
 		update_position(engine, &engine->keys);
 		update_rotation(engine->player, &engine->keys);

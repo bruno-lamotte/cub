@@ -10,7 +10,7 @@ static void	draw_monster_pixel(t_engine *eng, t_vec2_i pos)
 }
 
 static void	draw_single_minimap_monster(t_engine *eng, t_monster_rt *m,
-				t_vec2_i c, int radius)
+				t_vec2_i c, int radius, double px_per_tile)
 {
 	t_vec2_i	pos;
 	float		d2;
@@ -27,14 +27,17 @@ static void	draw_single_minimap_monster(t_engine *eng, t_monster_rt *m,
 		: ((int)(dist * 10.0f) >= DIST_MAX ? DIST_MAX - 1
 		: (int)(dist * 10.0f))] <= 0.05)
 		return ;
-	pos.x = c.x + (int)((m->pos.x - eng->player->pos.x) * 15.0);
-	pos.y = c.y + (int)((m->pos.y - eng->player->pos.y) * 15.0);
+	pos.x = c.x
+		+ (int)((m->pos.x - eng->player->pos.x) * px_per_tile);
+	pos.y = c.y
+		+ (int)((m->pos.y - eng->player->pos.y) * px_per_tile);
 	if ((pos.x - c.x) * (pos.x - c.x) + (pos.y - c.y) * (pos.y - c.y)
 		<= (radius - 5) * (radius - 5))
 		draw_monster_pixel(eng, pos);
 }
 
-void	draw_minimap_monsters(t_engine *eng, t_vec2_i c, int radius)
+void	draw_minimap_monsters(t_engine *eng, t_vec2_i c, int radius,
+			double px_per_tile)
 {
 	t_monster_rt	*m;
 	int				i;
@@ -44,7 +47,7 @@ void	draw_minimap_monsters(t_engine *eng, t_vec2_i c, int radius)
 	while (++i < eng->data->monster_rt_count)
 	{
 		if (!(m[i].flags & MONSTER_DEAD))
-			draw_single_minimap_monster(eng, &m[i], c, radius);
+			draw_single_minimap_monster(eng, &m[i], c, radius, px_per_tile);
 	}
 }
 

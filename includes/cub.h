@@ -376,7 +376,7 @@ void draw_tex_lib(t_screen *s, t_data *d);
 /*BLOB*/
 
 #define DIST_MAX 1024
-#define GAMMA 2.0f
+#define GAMMA 1.0f
 
 typedef struct s_lut
 {
@@ -738,7 +738,16 @@ typedef struct s_light
 	int		is_active;
 	int		is_triggered;
 	float	angle;
+	int		check_timer;
 }	t_light;
+
+typedef struct s_interact_obj
+{
+	int		is_door;
+	int		idx;
+	double	x;
+	double	y;
+}				t_interact_obj;
 
 typedef struct s_engine
 {
@@ -756,6 +765,10 @@ typedef struct s_engine
 	double			hacking_x;
 	double			hacking_y;
 	t_slr1			*slr;
+	int				terminal_mode;
+	int				selected_obj_idx;
+	t_interact_obj	interact_objs[64];
+	int				interact_obj_count;
 }   t_engine;
 
 bool get_alloc_size(t_tmp_header *hdr, size_t *out);
@@ -809,7 +822,8 @@ void    shutdown_thread_pool(t_engine *engine);
 void    put_pixel(t_img *img, int x, int y, int color);
 unsigned int blend_colors(unsigned int src, unsigned int dst, unsigned char alpha);
 void    draw_minimap(t_engine *engine);
-void		draw_minimap_monsters(t_engine *eng, t_vec2_i c, int radius);
+void		draw_minimap_monsters(t_engine *eng, t_vec2_i c, int radius,
+			double px_per_tile);
 void		draw_minimap_player(t_engine *eng, t_vec2_i c);
 
 

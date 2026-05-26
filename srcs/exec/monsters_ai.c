@@ -1063,6 +1063,57 @@ static void	print_monsters_debug(t_monster_rt *mstr, int count)
 	}
 }
 
+static int	is_any_monster_near(t_engine *eng, t_light *l)
+{
+	t_monster_rt	*mstr;
+	int				j;
+	double			dx;
+	double			dy;
+
+	mstr = get_monster_rt(eng->blob);
+	j = -1;
+	while (++j < eng->data->monster_rt_count)
+	{
+		if (!(mstr[j].flags & MONSTER_DEAD))
+		{
+			dx = mstr[j].pos.x - l->x;
+			dy = mstr[j].pos.y - l->y;
+			if (dx * dx + dy * dy < 0.64)
+				return (1);
+		}
+	}
+	return (0);
+}
+
+static void	update_alarm_disarm(t_engine *eng)
+{
+	int		i;
+	t_light	*l;
+
+	i = -1;
+	while (++i < eng->static_light_count)
+	{
+		l = &eng->static_lights[i];
+		if (l->is_alarm && l->is_triggered)
+		{
+			if (is_any_monster_near(eng, l))
+			{
+				l->check_timer++;
+				if (l->check_timer >= 120)
+				{
+					l->is_triggered = 0;
+					l->check_timer = 0;
+					update_global_alarm_state(eng);
+				}
+			}
+			else
+				l->check_timer = 0;
+		}
+		else
+			l->check_timer = 0;
+	}
+}
+
 void	update_monsters(t_engine *eng)
 {
 	t_monster_rt	*mstr;
@@ -1080,6 +1131,7 @@ void	update_monsters(t_engine *eng)
 		if (!(mstr[i].flags & MONSTER_DEAD))
 			update_single_monster(&mstr[i], i, eng);
 	}
+	update_alarm_disarm(eng);
 	frame++;
 	if (frame % 60 == 0)
 		print_monsters_debug(mstr, eng->data->monster_rt_count);
