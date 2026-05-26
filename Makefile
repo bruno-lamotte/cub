@@ -1,6 +1,7 @@
 NAME = cub
 
 CC = cc
+MAKEFLAGS += -j16
 CFLAGS = -O3 -g -Wall -Wextra -lpthread
 RM = rm -rf
 

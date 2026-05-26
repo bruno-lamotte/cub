@@ -1,9 +1,9 @@
-TEXTURE
+TEXTURES
 {
-	text_north	 : PATH, ./tex.xpm
-	text_west	 : PATH, ./tex.xpm
-	text_south	 : PATH, ./tex.xpm
-	text_est	 : PATH, ./tex.xpm
+	text_north	 : HEXA, 0xD62828
+	text_west	 : HEXA, 0xBC6C25
+	text_south	 : HEXA, 0x8B4513
+	text_est	 : HEXA, 0xF4A261
 	text_floor	 : PATH, ./tex.xpm
 	text_ceiling : PATH, ./tex.xpm
 	text_front	 : PATH, ./tex.xpm
@@ -13,44 +13,62 @@ TEXTURE
 	monster_tex  : HEXA, 0x000fff
 	tree_tex	 : PATH, ./tex.xpm
 }
-WALL
+WALLS
 {
-	1	: WALL,text_north, text_west, text_south, text_est
-	2	: WALLNUT, text_north, text_west, text_south, text_est
-	3	: WALLHAHA, text_north, text_west, text_south, text_est
-	4	: WAAAAAAA, text_north, text_west, text_south, text_est
-	5	: WIIIIIII, text_north, text_west, text_south, text_est
+	K	: text_north, text_west, text_south, text_est
+	1	: text_north, text_west, text_south, text_est
+	2	: text_north, text_west, text_south, text_est
+	3	: text_north, text_west, text_south, text_est
+	4	: text_north, text_west, text_south, text_est
+	5	: text_north, text_west, text_south, text_est
 }
-AIR
+AIRS
 {
-	0	: AIR, text_floor, text_ceiling
-	A	: AIR1, text_floor, text_ceiling
+	o	: text_floor, text_ceiling
+	k	: text_floor, text_ceiling
+	0	: text_floor, text_ceiling
+	A	: text_floor, text_ceiling
 }
-DOOR
+DOORS
 {
-	D	: DOOR, 1, text_front, text_back, text_side
+	d	: 1, text_front, text_back, text_side
+	a	: 0, text_front, text_back, text_side
+	D	: 1, text_front, text_back, text_side
+}
+MONSTERS
+{
+	M : 100%, 10, monster_tex
+	m : 50%, 5, monster_tex
 }
 OBJECTS
 {
-	M : MONSTER, 0, monster_tex
-	T : TREE, 1, tree_tex
+	T : 50%, tree_tex
+	L : 50%, tree_tex, ON
 }
-PLAYER
+PLAYERS
 {
-	N : ROBOCOP, N, text_player
-	S : ROBOCOP, S, text_player
-	E : ROBOCOP, E, text_player
-	W : ROBOCOP, W, text_player
+	N : N, text_player
+	S : S, text_player
+	E : E, text_player
+	W : W, text_player
 }
-BASE_MAP
+MANDATORY_MAP
 {
-111
-101
-111
+111111111111111111111111
+1000000000000000000000L1
+111011111111111111111111
+10M000000000000000000001
+1111111111111111111111N1
+1T0000000000000000000001
+111111111111111111111111
 }
-OBJECT_MAP
+BONUS_MAP
 {
-111
-1N1
-111
+111111111111111111111111
+1000000000000000000000L1
+111011111111111111111111
+10M000000000000000000001
+1111111111111111111111N1
+1T0000000000000000000001
+111111111111111111111111
 }

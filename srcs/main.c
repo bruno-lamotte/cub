@@ -60,6 +60,7 @@ int main(int ac, char **av)
 		return (free_img_tab(screen->mlx_ptr, data->img_tab, data->textures_len), free_screen(screen), free_preprocessing_data(data), free(data), free(screen), 1);
 	}
 	init_thread_pool(engine);
+	init_static_lights(engine);
 
 	engine->slr = malloc(sizeof(t_slr1));
 	if (engine->slr)

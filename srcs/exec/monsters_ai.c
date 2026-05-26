@@ -18,31 +18,60 @@ static int	is_player_in_light(t_player_rt *p, t_engine *eng)
 			eng->blob, eng) > 0.05f);
 }
 
+static int	is_player_in_external_light(t_player_rt *p, t_engine *eng)
+{
+	int		i;
+	t_light	*l;
+	double	d2;
+
+	i = -1;
+	while (++i < eng->static_light_count)
+	{
+		l = &eng->static_lights[i];
+		d2 = (p->pos.x - l->x) * (p->pos.x - l->x)
+			+ (p->pos.y - l->y) * (p->pos.y - l->y);
+		if (d2 >= l->radius * l->radius)
+			continue ;
+		if (l->is_alarm && l->is_triggered
+			&& check_los(l->x, l->y, p->pos.x, p->pos.y, eng->blob))
+			return (1);
+		if (!l->is_alarm && l->is_active
+			&& check_los(l->x, l->y, p->pos.x, p->pos.y, eng->blob))
+			return (1);
+	}
+	return (0);
+}
+
+static int	check_los_and_fov(t_monster_rt *m, t_player_rt *p,
+				double cos_a, void *blob)
+{
+	return (cos_a >= 0.866 && check_los(m->pos.x, m->pos.y,
+			p->pos.x, p->pos.y, blob));
+}
+
 static int	detect_player(t_monster_rt *m, t_engine *eng)
 {
 	double		d[2];
 	float		d2;
 	double		cos_a;
 	t_player_rt	*p;
-	int			in_light;
 
 	p = eng->player;
 	d[0] = p->pos.x - m->pos.x;
 	d[1] = p->pos.y - m->pos.y;
 	d2 = (float)(d[0] * d[0] + d[1] * d[1]);
-	in_light = is_player_in_light(p, eng);
-	if (!in_light && d2 >= 4.0f)
-		return (0);
-	if (in_light && d2 >= 36.0f)
+	if (d2 < 0.01f)
+		return (1);
+	cos_a = (d[0] * m->dir.x + d[1] * m->dir.y) * fast_inv_sqrt(d2);
+	if (is_player_in_external_light(p, eng)
+		&& check_los_and_fov(m, p, cos_a, eng->blob))
+		return (1);
+	if (is_player_in_light(p, eng) ? d2 >= 36.0f : d2 >= 4.0f)
 		return (0);
 	if (d2 < 1.00f && check_los(m->pos.x, m->pos.y, p->pos.x, p->pos.y,
 			eng->blob))
 		return (1);
-	cos_a = (d[0] * m->dir.x + d[1] * m->dir.y) * fast_inv_sqrt(d2);
-	if (cos_a >= 0.866 && check_los(m->pos.x, m->pos.y, p->pos.x, p->pos.y,
-			eng->blob))
-		return (1);
-	return (0);
+	return (check_los_and_fov(m, p, cos_a, eng->blob));
 }
 
 static int	check_monster_collision(double x, double y, int self_idx,
