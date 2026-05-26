@@ -1,0 +1,56 @@
+TEXTURE
+{
+	text_north	 : PATH, ./tex.xpm
+	text_west	 : PATH, ./tex.xpm
+	text_south	 : PATH, ./tex.xpm
+	text_est	 : PATH, ./tex.xpm
+	text_floor	 : PATH, ./tex.xpm
+	text_ceiling : PATH, ./tex.xpm
+	text_front	 : PATH, ./tex.xpm
+	text_back	 : PATH, ./tex.xpm
+	text_side	 : HEXA, 0xfff000
+	text_player	 : PATH, ./tex.xpm
+	monster_tex  : HEXA, 0x000fff
+	tree_tex	 : PATH, ./tex.xpm
+}
+WALL
+{
+	1	: WALL,text_north, text_west, text_south, text_est
+	2	: WALLNUT, text_north, text_west, text_south, text_est
+	3	: WALLHAHA, text_north, text_west, text_south, text_est
+	4	: WAAAAAAA, text_north, text_west, text_south, text_est
+	5	: WIIIIIII, text_north, text_west, text_south, text_est
+}
+AIR
+{
+	0	: AIR, text_floor, text_ceiling
+	A	: AIR1, text_floor, text_ceiling
+}
+DOOR
+{
+	D	: DOOR, 1, text_front, text_back, text_side
+}
+OBJECTS
+{
+	M : MONSTER, 0, monster_tex
+	T : TREE, 1, tree_tex
+}
+PLAYER
+{
+	N : ROBOCOP, N, text_player
+	S : ROBOCOP, S, text_player
+	E : ROBOCOP, E, text_player
+	W : ROBOCOP, W, text_player
+}
+BASE_MAP
+{
+111
+101
+111
+}
+OBJECT_MAP
+{
+111
+1N1
+111
+}

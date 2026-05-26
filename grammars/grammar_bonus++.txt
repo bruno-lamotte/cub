@@ -1,0 +1,11 @@
+monster_lifecycle: patrol_state
+patrol_state: STIM_LOS_TRUE chase_state
+| STIM_COLLISION reloc_state
+| STIM_ALERT_TIMEOUT reloc_state
+| STIM_STATION_TIMEOUT reloc_state
+chase_state: STIM_LOS_FALSE scan_state
+| ACT_MELEE_STRIKE attack_state
+attack_state: ACT_CHASE_MOVE chase_state
+scan_state: STIM_LOS_TRUE chase_state
+| STIM_ALERT_TIMEOUT reloc_state
+reloc_state: ACT_RECALCULATE_PATROL patrol_state

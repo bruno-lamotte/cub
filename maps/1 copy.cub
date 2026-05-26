@@ -1,0 +1,55 @@
+TEXTURES
+{
+	text_north	 : HEXA, 0xD62828
+	text_west	 : HEXA, 0xBC6C25
+	text_south	 : HEXA, 0x8B4513
+	text_est	 : HEXA, 0xF4A261
+	text_floor	 : PATH, ./tex.xpm
+	text_ceiling : PATH, ./tex.xpm
+	text_front	 : PATH, ./tex.xpm
+	text_back	 : PATH, ./tex.xpm
+	text_side	 : HEXA, 0xfff000
+	text_player	 : PATH, ./tex.xpm
+	monster_tex  : HEXA, 0x000fff
+	tree_tex	 : PATH, ./tex.xpm
+}
+WALLS
+{
+	1	: text_north, text_west, text_south, text_est
+	2	: text_north, text_west, text_south, text_est
+	3	: text_north, text_west, text_south, text_est
+	4	: text_north, text_west, text_south, text_est
+	5	: text_north, text_west, text_south, text_est
+}
+AIRS
+{
+	0	: text_floor, text_ceiling
+	A	: text_floor, text_ceiling
+}
+DOORS
+{
+	D	: 1, text_front, text_back, text_side
+}
+MONSTERS
+{
+	M : 100%, 10, monster_tex
+	m : 50%, 5, monster_tex
+}
+OBJECTS
+{
+	T : 50%, tree_tex
+}
+PLAYERS
+{
+	N : N, text_player
+	S : S, text_player
+	E : E, text_player
+	W : W, text_player
+}
+MANDATORY_MAP
+{
+ 1M
+101111
+ 1N101
+  1101
+}
