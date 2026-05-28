@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   validate_map.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/28 16:57:51 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/05/28 16:59:04 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
-bool check_m_map_sym(char *all_sym_array, char **map, t_index *i, uint32_t map_pos)
+bool	check_m_map_sym(char *all_sym_array, char **map, t_index *i, uint32_t map_pos)
 {
-	size_t l;
-	size_t c;
+	size_t	l;
+	size_t	c;
 
 	l = 0;
 	while (map[l])
@@ -24,12 +36,12 @@ bool check_m_map_sym(char *all_sym_array, char **map, t_index *i, uint32_t map_p
 	return (true);
 }
 
-bool check_player(t_data *d, t_index *i)
+bool	check_player(t_data *d, t_index *i)
 {
-	size_t l;
-	size_t c;
+	size_t	l;
+	size_t	c;
 	bool	player_found;
-	
+
 	player_found = false;
 	l = 0;
 	while (d->m_map[l])
@@ -45,7 +57,6 @@ bool check_player(t_data *d, t_index *i)
 			}
 			if (ft_isset(d->m_map[l][c], d->player_ids))
 			{
-				// assign player pos
 				d->player_row = l;
 				d->player_col = c;
 				size_t p_idx = 0;
@@ -86,9 +97,9 @@ typedef struct	s_tmp_map_data
 	t_perr		err;
 }				t_tmp_map_data;
 
-void free_bool_tab(bool **tab)
+void	free_bool_tab(bool **tab)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (tab[i])
@@ -99,11 +110,11 @@ void free_bool_tab(bool **tab)
 	free(tab);
 }
 
-bool **dup_str_tab_to_bool_tab(char **map, size_t row_len)
+bool	**dup_str_tab_to_bool_tab(char **map, size_t row_len)
 {
-	bool **out;
-	size_t i;
-	size_t tmp_len;
+	bool	**out;
+	size_t	i;
+	size_t	tmp_len;
 
 	i = 0;
 	out = malloc(sizeof(bool *) * (row_len + 1));
