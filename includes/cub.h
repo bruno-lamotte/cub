@@ -324,7 +324,7 @@ bool check_player_section(t_parsing *p, size_t len);
 bool check_mandatory_map_section(t_parsing *p, size_t len);
 bool check_bonus_map_section(t_parsing *p, size_t len);
 
-bool check_section(char *name, bool (*func)(t_parsing*, size_t), t_parsing *p);
+bool	check_s(char *n, bool (*f)(t_parsing *, size_t), t_parsing *p, size_t l);
 
 bool validate_map(t_data *d, t_index *i);
 bool is_map_solvable(t_data *d);
@@ -660,7 +660,7 @@ typedef struct s_vec2_i
 {
 	int	x;
 	int	y;
-}	t_vec2_i;
+}	t_vec2_i; // __attribute__((packed));
 
 #include <pthread.h>
 

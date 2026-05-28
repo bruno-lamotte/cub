@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_file.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/28 14:30:48 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/05/28 14:31:41 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
 void	free_str_tab(char **tab)
@@ -7,7 +19,7 @@ void	free_str_tab(char **tab)
 	i = 0;
 	if (!tab)
 		return ;
-	while(tab[i])
+	while (tab[i])
 	{
 		free(tab[i]);
 		i++;
@@ -23,7 +35,7 @@ void	print_str_tab(char **tab)
 	i = 0;
 	if (!tab)
 		return ;
-	while(tab[i])
+	while (tab[i])
 	{
 		printf("%s\n", tab[i]);
 		i++;
@@ -31,7 +43,7 @@ void	print_str_tab(char **tab)
 	return ;
 }
 
-ssize_t get_file_size(char *filename)
+ssize_t	get_file_size(char *filename)
 {
 	ssize_t	count;
 	int		fd;
@@ -42,7 +54,7 @@ ssize_t get_file_size(char *filename)
 	if (fd < 0)
 		return (-1);
 	line = get_next_line(fd);
-	while(line)
+	while (line)
 	{
 		count++;
 		free(line);
@@ -52,9 +64,9 @@ ssize_t get_file_size(char *filename)
 	return (count);
 }
 
-char **get_file(char *filename)
+char	**get_file(char *filename)
 {
-	ssize_t 	map_size;
+	ssize_t		map_size;
 	ssize_t		i;
 	int			fd;
 	char		**out;
@@ -69,7 +81,7 @@ char **get_file(char *filename)
 	if (!out)
 		return (close(fd), NULL);
 	i = 0;
-	while(i < map_size)
+	while (i < map_size)
 	{
 		out[i] = get_next_line(fd);
 		if (!out[i])

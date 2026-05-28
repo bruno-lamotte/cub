@@ -21,14 +21,14 @@ int main(int ac, char **av)
 
 	screen = ft_calloc(1, sizeof(t_screen));
 	if (!screen)
-		return (printf("2\n"), free_preprocessing_data(data), 1);
+		return (free_preprocessing_data(data), 1);
 	if (!init_mlx(screen, "SUPER FENETRE"))
 		return (free_preprocessing_data(data), 1);
 	if (!get_all_tex(data, screen))
-		return (printf("ERROR MLX\n"), free_screen(screen), free_preprocessing_data(data), 1);
+		return (free_screen(screen), free_preprocessing_data(data), 1);
 	// draw_tex_lib(screen, data);
 	
-	printf("BLOBBING\n");
+	// build blob
 	void *blob;
 	if (!build_blob(data, &blob))
 		return (free_img_tab(screen->mlx_ptr, data->img_tab, data->textures_len), free_screen(screen), free_preprocessing_data(data), free(data), free(screen), 1);
@@ -74,10 +74,10 @@ int main(int ac, char **av)
 	}
 
 	// register hooks
-	mlx_hook(screen->win_ptr, 2, 1L<<0, key_press, engine);
-	mlx_hook(screen->win_ptr, 3, 1L<<1, key_release, engine);
-	mlx_hook(screen->win_ptr, 17, 0L, close_window, engine);
-	mlx_loop_hook(screen->mlx_ptr, game_loop, engine);
+	mlx_hook(screen->win_ptr, 2, 1L<<0, (int (*)())(void *)key_press, engine);
+	mlx_hook(screen->win_ptr, 3, 1L<<1, (int (*)())(void *)key_release, engine);
+	mlx_hook(screen->win_ptr, 17, 0L, (int (*)())(void *)close_window, engine);
+	mlx_loop_hook(screen->mlx_ptr, (int (*)())(void *)game_loop, engine);
 
 	// run game
 	mlx_loop(screen->mlx_ptr);
