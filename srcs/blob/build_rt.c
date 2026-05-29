@@ -101,8 +101,8 @@ void build_mstr_rt(t_data *data, t_monster_rt *mstr, t_tmp_cell *c)
 	mstr[c->mstr_idx].def_id = get_def_id(data->monster_ids, c->m);
 	def = &data->monsters_defs[mstr[c->mstr_idx].def_id];
 	mstr[c->mstr_idx].current_hp = def->hp;
-	mstr[c->mstr_idx].pos.x = c->c + 0.5f;
-	mstr[c->mstr_idx].pos.y = c->l + 0.5f;
+	mstr[c->mstr_idx].pos.d.x = c->c + 0.5f;
+	mstr[c->mstr_idx].pos.d.y = c->l + 0.5f;
 	mstr[c->mstr_idx].map_id = c->soa_idx;
 	// no dir vec decided yet
 	(c->mstr_idx)++;

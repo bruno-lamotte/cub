@@ -15,29 +15,63 @@ typedef struct s_dda_state
 	int		hit;
 }				t_dda_state;
 
-static void	init_ray(int x, t_player_rt *p, t_ray_data *out, t_dda_state *s)
+static void	init_ray_steps(t_player_rt *p, t_ray_data *out, t_dda_state *s)
 {
-	float	cam_x;
+	if (s->ray_dir_x < 0.0f)
+	{
+		s->step_x = -1;
+		s->side_dist_x = ((float)p->pos.d.x - out->map_x) * s->delta_dist_x;
+	}
+	else
+	{
+		s->step_x = 1;
+		s->side_dist_x = (out->map_x + 1.0f - (float)p->pos.d.x) * s->delta_dist_x;
+	}
+	if (s->ray_dir_y < 0.0f)
+	{
+		s->step_y = -1;
+		s->side_dist_y = ((float)p->pos.d.y - out->map_y) * s->delta_dist_y;
+	}
+	else
+	{
+		s->step_y = 1;
+		s->side_dist_y = (out->map_y + 1.0f - (float)p->pos.d.y) * s->delta_dist_y;
+	}
+}
 
-	cam_x = 2.0f * x / (float)WINDOW_WIDTH - 1.0f;
-	s->ray_dir_x = (float)p->dir.x + (float)p->plane.x * cam_x;
-	s->ray_dir_y = (float)p->dir.y + (float)p->plane.y * cam_x;
-	out->map_x = (int)p->pos.x;
-	out->map_y = (int)p->pos.y;
-	s->delta_dist_x = (s->ray_dir_x == 0.0f) ? 1e30f
-		: fabsf(1.0f / s->ray_dir_x);
-	s->delta_dist_y = (s->ray_dir_y == 0.0f) ? 1e30f
-		: fabsf(1.0f / s->ray_dir_y);
-	s->step_x = (s->ray_dir_x < 0.0f) ? -1 : 1;
-	s->side_dist_x = (s->ray_dir_x < 0.0f) ? ((float)p->pos.x - out->map_x)
-		* s->delta_dist_x : (out->map_x + 1.0f - (float)p->pos.x)
-		* s->delta_dist_x;
-	s->step_y = (s->ray_dir_y < 0.0f) ? -1 : 1;
-	s->side_dist_y = (s->ray_dir_y < 0.0f) ? ((float)p->pos.y - out->map_y)
-		* s->delta_dist_y : (out->map_y + 1.0f - (float)p->pos.y)
-		* s->delta_dist_y;
+static void	init_ray(double cam_x, t_player_rt *p, t_ray_data *out, t_dda_state *s)
+{
+	s->ray_dir_x = (float)p->dir.d.x + (float)p->plane.d.x * cam_x;
+	s->ray_dir_y = (float)p->dir.d.y + (float)p->plane.d.y * cam_x;
+	out->map_x = (int)p->pos.d.x;
+	out->map_y = (int)p->pos.d.y;
+	if (s->ray_dir_x == 0.0f)
+		s->delta_dist_x = 1e30f;
+	else
+		s->delta_dist_x = fabsf(1.0f / s->ray_dir_x);
+	if (s->ray_dir_y == 0.0f)
+		s->delta_dist_y = 1e30f;
+	else
+		s->delta_dist_y = fabsf(1.0f / s->ray_dir_y);
+	init_ray_steps(p, out, s);
 	s->hit = 0;
 	s->side = 0;
+}
+
+static void	dda_single_step(t_ray_data *out, t_dda_state *s)
+{
+	if (s->side_dist_x < s->side_dist_y)
+	{
+		s->side = 0;
+		s->side_dist_x += s->delta_dist_x;
+		out->map_x += s->step_x;
+	}
+	else
+	{
+		s->side = 1;
+		s->side_dist_y += s->delta_dist_y;
+		out->map_y += s->step_y;
+	}
 }
 
 static void	perform_dda(t_ray_data *out, t_dda_state *s, t_player_rt *p,
@@ -51,22 +85,35 @@ static void	perform_dda(t_ray_data *out, t_dda_state *s, t_player_rt *p,
 	flg = get_map_flags(blob);
 	while (s->hit == 0)
 	{
-		s->side = (s->side_dist_x < s->side_dist_y) ? 0 : 1;
-		if (s->side == 0)
-			out->map_x += (s->side_dist_x += s->delta_dist_x, s->step_x);
-		else
-			out->map_y += (s->side_dist_y += s->delta_dist_y, s->step_y);
+		dda_single_step(out, s);
 		if (out->map_x < 0 || out->map_x >= w || out->map_y < 0
 			|| out->map_y >= get_map_height(get_blob_hdr(blob)))
 			s->hit = (out->hit_type = 0, 1);
 		else if (flg[idx = out->map_y * w + out->map_x] & CELL_HAS_WALL)
 			s->hit = (out->hit_type = get_map_block_ids(blob)[idx], 1);
-		else if ((flg[idx] & CELL_HAS_DOOR) && (out->ray_dir.x
-				= DOUBLE_TO_FP(s->ray_dir_x), 1) && (out->ray_dir.y
+		else if ((flg[idx] & CELL_HAS_DOOR) && (out->ray_dir.fp.x
+				= DOUBLE_TO_FP(s->ray_dir_x), 1) && (out->ray_dir.fp.y
 				= DOUBLE_TO_FP(s->ray_dir_y), 1))
 			if (check_door_hit(out, p, blob))
 				s->hit = (out->hit_type = get_map_occ_ids(blob)[idx], 1);
 	}
+}
+
+static float	get_dda_dist(t_dda_state *s, t_ray_data *out, t_player_rt *p)
+{
+	float	dist;
+
+	if (s->side == 0)
+		dist = ((float)out->map_x - (float)p->pos.d.x
+				+ (1.0f - (float)s->step_x) * 0.5f) / s->ray_dir_x;
+	else
+		dist = ((float)out->map_y - (float)p->pos.d.y
+				+ (1.0f - (float)s->step_y) * 0.5f) / s->ray_dir_y;
+	if (dist <= 0.0f)
+		return (0.1f);
+	if (dist > 30000.0f)
+		return (30000.0f);
+	return (dist);
 }
 
 static void	fill_ray_out(t_ray_data *out, t_dda_state *s, t_player_rt *p,
@@ -78,32 +125,27 @@ static void	fill_ray_out(t_ray_data *out, t_dda_state *s, t_player_rt *p,
 	if (get_map_flags(blob)[out->map_y * get_map_width(get_blob_hdr(blob))
 			+ out->map_x] & CELL_HAS_WALL)
 	{
+		dist = get_dda_dist(s, out, p);
 		if (s->side == 0)
-			dist = ((float)out->map_x - (float)p->pos.x
-					+ (1.0f - (float)s->step_x) * 0.5f) / s->ray_dir_x;
+			wx = (float)p->pos.d.y + dist * s->ray_dir_y;
 		else
-			dist = ((float)out->map_y - (float)p->pos.y
-					+ (1.0f - (float)s->step_y) * 0.5f) / s->ray_dir_y;
-		if (dist <= 0.0f)
-			dist = 0.1f;
-		if (dist > 30000.0f)
-			dist = 30000.0f;
-		wx = (s->side == 0) ? (float)p->pos.y + dist * s->ray_dir_y
-			: (float)p->pos.x + dist * s->ray_dir_x;
+			wx = (float)p->pos.d.x + dist * s->ray_dir_x;
 		wx -= floorf(wx);
 		out->perp_wall_dist = DOUBLE_TO_FP(dist);
 		out->side = s->side;
 		out->wall_x = DOUBLE_TO_FP(wx);
 	}
-	out->ray_dir.x = DOUBLE_TO_FP(s->ray_dir_x);
-	out->ray_dir.y = DOUBLE_TO_FP(s->ray_dir_y);
+	out->ray_dir.fp.x = DOUBLE_TO_FP(s->ray_dir_x);
+	out->ray_dir.fp.y = DOUBLE_TO_FP(s->ray_dir_y);
 }
 
-void	cast_ray(int x, t_player_rt *p, void *blob, t_ray_data *out)
+void	cast_ray(t_worker *w, int x, t_ray_data *out)
 {
 	t_dda_state	s;
+	float		cam_x;
 
-	init_ray(x, p, out, &s);
-	perform_dda(out, &s, p, blob);
-	fill_ray_out(out, &s, p, blob);
+	cam_x = 2.0f * x / (float)w->screen->win_width - 1.0f;
+	init_ray(cam_x, w->player, out, &s);
+	perform_dda(out, &s, w->player, w->blob);
+	fill_ray_out(out, &s, w->player, w->blob);
 }

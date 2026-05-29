@@ -1,4 +1,5 @@
 #include "cub.h"
+#include <math.h>
 
 typedef union u_conv
 {
@@ -6,13 +7,13 @@ typedef union u_conv
 	int32_t		i;
 }	t_conv;
 
-void	rotate_vec_fp(t_vec2_fp *v, t_fp fp_cos, t_fp fp_sin)
+void	rotate_vec_fp(t_vec2 *v, t_fp fp_cos, t_fp fp_sin)
 {
 	t_fp	old_x;
 
-	old_x = v->x;
-	v->x = FP_MUL(old_x, fp_cos) - FP_MUL(v->y, fp_sin);
-	v->y = FP_MUL(old_x, fp_sin) + FP_MUL(v->y, fp_cos);
+	old_x = v->fp.x;
+	v->fp.x = FP_MUL(old_x, fp_cos) - FP_MUL(v->fp.y, fp_sin);
+	v->fp.y = FP_MUL(old_x, fp_sin) + FP_MUL(v->fp.y, fp_cos);
 }
 
 float	fast_inv_sqrt(float number)
@@ -63,30 +64,40 @@ int	is_door_horiz(int mx, int my, int w, void *blob)
 	return (1);
 }
 
+static void	calc_door_params(t_ray_data *ray, t_player_rt *p, int hz,
+				float *params)
+{
+	if (hz)
+	{
+		params[0] = FP_TO_FLOAT(ray->ray_dir.fp.y);
+		params[1] = FP_TO_FLOAT(ray->ray_dir.fp.x);
+		params[2] = (ray->map_y + 0.5f - p->pos.d.y) / params[0];
+		params[3] = p->pos.d.x + params[2] * params[1] - ray->map_x;
+	}
+	else
+	{
+		params[0] = FP_TO_FLOAT(ray->ray_dir.fp.x);
+		params[1] = FP_TO_FLOAT(ray->ray_dir.fp.y);
+		params[2] = (ray->map_x + 0.5f - p->pos.d.x) / params[0];
+		params[3] = p->pos.d.y + params[2] * params[1] - ray->map_y;
+	}
+}
+
 int	check_door_hit(t_ray_data *ray, t_player_rt *p, void *blob)
 {
 	int		hz;
-	float	t;
-	float	da;
-	float	db;
-	float	wx;
+	float	params[4];
 
 	hz = is_door_horiz(ray->map_x, ray->map_y,
 			get_map_width(get_blob_hdr(blob)), blob);
-	da = hz ? FP_TO_FLOAT(ray->ray_dir.y) : FP_TO_FLOAT(ray->ray_dir.x);
-	db = hz ? FP_TO_FLOAT(ray->ray_dir.x) : FP_TO_FLOAT(ray->ray_dir.y);
-	if (fabsf(da) < 1e-6f)
+	calc_door_params(ray, p, hz, params);
+	if (fabsf(params[0]) < 1e-6f || params[2] <= 0.0f)
 		return (0);
-	t = ((hz ? ray->map_y : ray->map_x) + 0.5f
-			- (hz ? p->pos.y : p->pos.x)) / da;
-	if (t <= 0.0f)
-		return (0);
-	wx = (hz ? p->pos.x : p->pos.y) + t * db - (hz ? ray->map_x : ray->map_y);
-	if (wx < 0.0f || wx > 1.0f || wx < (float)get_door_ratio(ray->map_x,
+	if (params[3] < 0.0f || params[3] > 1.0f || params[3] < (float)get_door_ratio(ray->map_x,
 			ray->map_y, get_map_width(get_blob_hdr(blob)), blob))
 		return (0);
-	ray->perp_wall_dist = DOUBLE_TO_FP(t);
+	ray->perp_wall_dist = DOUBLE_TO_FP(params[2]);
 	ray->side = hz;
-	ray->wall_x = DOUBLE_TO_FP(wx);
+	ray->wall_x = DOUBLE_TO_FP(params[3]);
 	return (1);
 }

@@ -29,21 +29,65 @@ SRCS = \
 	srcs/blob/print_blob.c \
 	srcs/blob/build_helpers.c \
 	srcs/blob/build_hdr.c \
-	srcs/exec/controls.c \
-	srcs/exec/player.c \
-	srcs/exec/movement.c \
+	srcs/exec/controls/window.c \
+	srcs/exec/controls/keyboard.c \
+	srcs/exec/controls/terminal.c \
+	srcs/exec/controls/interaction.c \
 	srcs/exec/doors.c \
+	srcs/exec/player.c \
+	srcs/exec/movement/player_move.c \
+	srcs/exec/movement/collision.c \
+	srcs/exec/render/thread_pool.c \
+	srcs/exec/render/fps.c \
+	srcs/exec/render/draw_utils.c \
+	srcs/exec/render/draw_shapes.c \
+	srcs/exec/render/hacking_overlay.c \
+	srcs/exec/render/hacking_terminal.c \
+	srcs/exec/render/render_main.c \
+	srcs/exec/raycasting.c \
 	srcs/exec/draw_column.c \
 	srcs/exec/draw_pixels.c \
-	srcs/exec/light_sources.c \
-	srcs/exec/monsters_ai.c \
-	srcs/exec/raycasting.c \
-	srcs/exec/render.c \
-	srcs/exec/vector_arithmetic.c \
-	srcs/exec/minimap.c \
+	srcs/exec/light_sources/light_init.c \
+	srcs/exec/light_sources/light_los.c \
+	srcs/exec/light_sources/light_compute.c \
+	srcs/exec/minimap/minimap_draw.c \
+	srcs/exec/minimap/minimap_utils.c \
 	srcs/exec/minimap_entities.c \
-	srcs/exec/monsters_render.c \
-	srcs/exec/slr_parser.c
+	srcs/exec/monsters_render/sprite_collect.c \
+	srcs/exec/monsters_render/sprite_proj.c \
+	srcs/exec/monsters_render/sprite_draw.c \
+	srcs/exec/monsters_ai/player_detection.c \
+	srcs/exec/monsters_ai/collision.c \
+	srcs/exec/monsters_ai/patrol_select.c \
+	srcs/exec/monsters_ai/patrol_assign.c \
+	srcs/exec/monsters_ai/bfs_utils.c \
+	srcs/exec/monsters_ai/bfs_path.c \
+	srcs/exec/monsters_ai/bfs_move.c \
+	srcs/exec/monsters_ai/mstr_behaviors_move.c \
+	srcs/exec/monsters_ai/slr_states.c \
+	srcs/exec/monsters_ai/slr_transitions.c \
+	srcs/exec/monsters_ai/mstr_transitions.c \
+	srcs/exec/monsters_ai/mstr_behaviors_actions.c \
+	srcs/exec/monsters_ai/mstr_behaviors_alarm.c \
+	srcs/exec/monsters_ai/mstr_update.c \
+	srcs/exec/monsters_ai/mstr_update_utils.c \
+	srcs/exec/vector_arithmetic.c \
+	srcs/exec/slr/item.c \
+	srcs/exec/slr/closure.c \
+	srcs/exec/slr/free_slr.c \
+	srcs/exec/slr/free_utils.c \
+	srcs/exec/slr/firsts.c \
+	srcs/exec/slr/follows.c \
+	srcs/exec/slr/follows_main.c \
+	srcs/exec/slr/grammar.c \
+	srcs/exec/slr/grammar_main.c \
+	srcs/exec/slr/symbols_utils.c \
+	srcs/exec/slr/symbols_main.c \
+	srcs/exec/slr/table_fill.c \
+	srcs/exec/slr/table_init.c \
+	srcs/exec/slr/states_utils.c \
+	srcs/exec/slr/states_main.c \
+	srcs/exec/slr/print.c
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 

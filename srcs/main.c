@@ -1,11 +1,12 @@
 #include "../includes/cub.h"
 
+
+
 int main(int ac, char **av)
 {
 	if (ac != 2)
 		return (1);
 
-	// init_data
 	t_data *data;
 
 	data = ft_calloc(1, sizeof(t_data));
@@ -16,7 +17,6 @@ int main(int ac, char **av)
 
 	print_parsing(data);
 
-	// init mlx
 	t_screen *screen;
 
 	screen = ft_calloc(1, sizeof(t_screen));
@@ -26,14 +26,12 @@ int main(int ac, char **av)
 		return (free_preprocessing_data(data), 1);
 	if (!get_all_tex(data, screen))
 		return (printf("ERROR MLX\n"), free_screen(screen), free_preprocessing_data(data), 1);
-	// draw_tex_lib(screen, data);
 	
 	printf("BLOBBING\n");
 	void *blob;
 	if (!build_blob(data, &blob))
 		return (free_img_tab(screen->mlx_ptr, data->img_tab, data->textures_len), free_screen(screen), free_preprocessing_data(data), free(data), free(screen), 1);
 
-	// init engine
 	t_engine *engine;
 	engine = ft_calloc(1, sizeof(t_engine));
 	if (!engine)
@@ -51,7 +49,7 @@ int main(int ac, char **av)
 		free(blob);
 		return (free_img_tab(screen->mlx_ptr, data->img_tab, data->textures_len), free_screen(screen), free_preprocessing_data(data), free(data), free(screen), 1);
 	}
-	engine->z_buffer = malloc(sizeof(t_ray_data) * WINDOW_WIDTH);
+	engine->z_buffer = malloc(sizeof(t_ray_data) * screen->win_width);
 	if (!engine->z_buffer)
 	{
 		free(engine->player);
@@ -73,7 +71,6 @@ int main(int ac, char **av)
 			init_all_ai_behaviors(engine->slr, engine);
 	}
 
-	// register hooks
 	mlx_hook(screen->win_ptr, 2, 1L<<0, key_press, engine);
 	mlx_hook(screen->win_ptr, 3, 1L<<1, key_release, engine);
 	mlx_hook(screen->win_ptr, 17, 0L, close_window, engine);

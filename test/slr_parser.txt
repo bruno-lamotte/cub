@@ -12,7 +12,7 @@
 
 #include "cub.h"
 
-static void	dummy_free(void *content)
+void	dummy_free(void *content)
 {
 	(void)content;
 }
@@ -1223,3 +1223,4 @@ int	slr_main(void)
 	free_all(data, table);
 	return (0);
 }
+int main(void) { return slr_main(); }

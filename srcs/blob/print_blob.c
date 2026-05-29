@@ -209,7 +209,7 @@ void print_one_mstr_rt(t_monster_rt *d, size_t width)
 	x = d->map_id % width;
 	y = d->map_id / width;
 	printf("X = %zd | Y = %zd\n", x, y);
-	printf("Xf = %f | Yf = %f\n", d->pos.x, d->pos.y);
+	printf("Xf = %f | Yf = %f\n", d->pos.d.x, d->pos.d.y);
 	printf("hp %d\n", d->current_hp);
 	printf("def id -> %d\n", d->def_id);
 	printf("-------\n");

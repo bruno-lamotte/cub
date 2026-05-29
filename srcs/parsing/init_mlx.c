@@ -17,9 +17,6 @@ void free_screen(t_screen *s)
 	}
 }
 
-int g_win_width = 1200;
-int g_win_height = 800;
-
 bool	init_mlx(t_screen *screen, char *title)
 {
 	int	screen_w;
@@ -29,18 +26,22 @@ bool	init_mlx(t_screen *screen, char *title)
 	if (!screen->mlx_ptr)
 		return (false);
 	mlx_get_screen_size(screen->mlx_ptr, &screen_w, &screen_h);
-	g_win_width = (screen_w * 9) / 10;
-	g_win_height = (screen_h * 9) / 10;
-	screen->win_ptr = mlx_new_window(screen->mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT, title);
+	screen->win_width = (screen_w * 9) / 10;
+	screen->win_height = (screen_h * 9) / 10;
+	screen->img.width = screen->win_width;
+	screen->img.height = screen->win_height;
+	screen->img2.width = screen->win_width;
+	screen->img2.height = screen->win_height;
+	screen->win_ptr = mlx_new_window(screen->mlx_ptr, screen->win_width, screen->win_height, title);
 	if (!screen->win_ptr)
 		return (free_screen(screen), false);
-	screen->img.img_ptr = mlx_new_image(screen->mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT);
+	screen->img.img_ptr = mlx_new_image(screen->mlx_ptr, screen->win_width, screen->win_height);
 	if (!screen->img.img_ptr)
 		return (free_screen(screen), false);
 	screen->img.addr = mlx_get_data_addr(screen->img.img_ptr, &screen->img.bpp, &screen->img.line_len, &screen->img.endian);
 	if (!screen->img.addr)
 		return (free_screen(screen), false);
-	screen->img2.img_ptr = mlx_new_image(screen->mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT);
+	screen->img2.img_ptr = mlx_new_image(screen->mlx_ptr, screen->win_width, screen->win_height);
 	if (!screen->img2.img_ptr)
 		return (free_screen(screen), false);
 	screen->img2.addr = mlx_get_data_addr(screen->img2.img_ptr, &screen->img2.bpp, &screen->img2.line_len, &screen->img2.endian);

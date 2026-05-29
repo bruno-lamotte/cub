@@ -8,27 +8,26 @@
 #define LIB_GAP_Y 50
 #define LIB_TEXT_DIST 20
 
-void	put_pixel_image(int x, int y, char *str, int color)
+void	put_pixel_image(t_screen *s, int x, int y, int color)
 {
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
 	int len;
 
-	if (x >= WINDOW_WIDTH || x < 0 || y >= WINDOW_HEIGHT || y < 0)
+	if (x >= s->win_width || x < 0 || y >= s->win_height || y < 0)
 		return;
 
-	len = WINDOW_WIDTH;
+	len = s->win_width;
 
 	r = (color >> 16) & 0xff;
 	g = (color >> 8) & 0xff;
 	b = color & 0xff;
 
-	str[(x * 4) + (len * 4 * y)] = b;
-	str[(x * 4) + (len * 4 * y) + 1] = g;
-	str[(x * 4) + (len * 4 * y) + 2] = r;
-	str[(x * 4) + (len * 4 * y) + 3] = 0;
-	return ;
+	s->img.addr[(x * 4) + (len * 4 * y)] = b;
+	s->img.addr[(x * 4) + (len * 4 * y) + 1] = g;
+	s->img.addr[(x * 4) + (len * 4 * y) + 2] = r;
+	s->img.addr[(x * 4) + (len * 4 * y) + 3] = 0;
 }
 
 uint32_t get_pixel_img(t_img *img, int x, int y)
@@ -63,19 +62,19 @@ void draw_tex_lib_elem(t_screen *s, t_img *tex, int start_x, int start_y)
 				src_y = y * tex->height / LIB_TEX_HEIGHT;
 				color = get_pixel_img(tex, src_x, src_y);
 			}
-			put_pixel_image(start_x + x, start_y + y,  s->img.addr, color);
+			put_pixel_image(s, start_x + x, start_y + y, color);
 			x++;
 		}
 		y++;
 	}
 }
 
-int	get_img_per_line(void)
+int	get_img_per_line(t_screen *s)
 {
 	int	usable_width;
 	int	img_per_line;
 
-	usable_width = WINDOW_WIDTH - 2 * LIB_MARGIN_X;
+	usable_width = s->win_width - 2 * LIB_MARGIN_X;
 	img_per_line = (usable_width + LIB_GAP_X)
 		/ (LIB_TEX_WIDTH + LIB_GAP_X);
 	if (img_per_line < 1)
@@ -93,9 +92,8 @@ void	draw_tex_lib(t_screen *s, t_data *d)
 	int		col;
 	int		row;
 
-	img_per_line = get_img_per_line();
+	img_per_line = get_img_per_line(s);
 	i = 0;
-	// draw textures 
 	while (i < d->textures_len)
 	{
 		col = i % img_per_line;
@@ -107,7 +105,6 @@ void	draw_tex_lib(t_screen *s, t_data *d)
 	}
 	mlx_put_image_to_window(s->mlx_ptr, s->win_ptr, s->img.img_ptr, 0, 0);
 	i = 0;
-	// draw textures names
 	while (i < d->textures_len)
 	{
 		col = i % img_per_line;

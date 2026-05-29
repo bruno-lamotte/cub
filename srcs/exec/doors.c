@@ -62,7 +62,7 @@ void	update_doors(t_engine *engine)
 	int			door_count;
 	int			width;
 	int			i;
-	t_xy_double	d;
+	t_vec2		d;
 
 	doors = get_door_rt(engine->blob);
 	door_count = get_blob_hdr(engine->blob)->door_rt.count;
@@ -70,9 +70,9 @@ void	update_doors(t_engine *engine)
 	i = -1;
 	while (++i < door_count)
 	{
-		d.x = (double)(doors[i].map_id % width) + 0.5 - engine->player->pos.x;
-		d.y = (double)(doors[i].map_id / width) + 0.5 - engine->player->pos.y;
-		check_door_proximity(&doors[i], engine, d.x * d.x + d.y * d.y);
+		d.d.x = (double)(doors[i].map_id % width) + 0.5 - engine->player->pos.d.x;
+		d.d.y = (double)(doors[i].map_id / width) + 0.5 - engine->player->pos.d.y;
+		check_door_proximity(&doors[i], engine, d.d.x * d.d.x + d.d.y * d.d.y);
 		process_door_transition(&doors[i]);
 	}
 }
