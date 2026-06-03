@@ -16,12 +16,12 @@ static int	sh_idx(double t)
 static void	calc_object_projection(t_engine *eng, double trans[2], int w_h[5])
 {
 	w_h[0] = abs((int)(eng->screen->win_height / trans[1]));
-	w_h[1] = -w_h[0] / 2 + (int)((eng->screen->win_width / 2) * (1.0 + trans[0]
-				/ trans[1]));
+	w_h[1] = -w_h[0] / 2 + (int)((eng->screen->win_width / 2)
+			* (1.0 + trans[0] / trans[1]));
 	if (w_h[1] < 0)
 		w_h[1] = 0;
-	w_h[2] = w_h[0] / 2 + (int)((eng->screen->win_width / 2) * (1.0 + trans[0]
-				/ trans[1]));
+	w_h[2] = w_h[0] / 2 + (int)((eng->screen->win_width / 2)
+			* (1.0 + trans[0] / trans[1]));
 	if (w_h[2] >= eng->screen->win_width)
 		w_h[2] = eng->screen->win_width - 1;
 	w_h[3] = -w_h[0] / 2 + eng->screen->win_height / 2;
@@ -36,37 +36,38 @@ static void	calc_object_projection(t_engine *eng, double trans[2], int w_h[5])
 # define MONSTER_SCALE 1.8
 #endif
 
-static void	render_sprite(t_engine *eng, t_sprite *s, t_lut *lut)
+static inline void	get_draw_bounds(t_engine *eng, double trans[2],
+						int w_h[5], int bounds[2], t_sprite *s)
 {
-	double	sp[2];
-	double	trans[2];
-	int		w_h[5];
-	int		stripe;
-	int		x_start;
-	int		x_end;
+	int	sprite_screen_x;
+	int	scaled_width;
 
-	if (get_sprite_coords(eng, s->pos.d.x, s->pos.d.y, sp, trans) <= 0.1)
-		return ;
-	calc_object_projection(eng, trans, w_h);
-	s->shade = lut->shade_table[sh_idx(trans[1])];
 	if (s->is_monster)
 	{
-		int sprite_screen_x = (int)((eng->screen->win_width / 2) * (1.0 + trans[0] / trans[1]));
-		int scaled_width = (int)(w_h[0] * MONSTER_SCALE);
-		x_start = -scaled_width / 2 + sprite_screen_x;
-		x_end = scaled_width / 2 + sprite_screen_x;
-		if (x_start < 0)
-			x_start = 0;
-		if (x_end >= eng->screen->win_width)
-			x_end = eng->screen->win_width - 1;
+		sprite_screen_x = (int)((eng->screen->win_width / 2)
+				* (1.0 + trans[0] / trans[1]));
+		scaled_width = (int)(w_h[0] * MONSTER_SCALE);
+		bounds[0] = -scaled_width / 2 + sprite_screen_x;
+		bounds[1] = scaled_width / 2 + sprite_screen_x;
+		if (bounds[0] < 0)
+			bounds[0] = 0;
+		if (bounds[1] >= eng->screen->win_width)
+			bounds[1] = eng->screen->win_width - 1;
 	}
 	else
 	{
-		x_start = w_h[1];
-		x_end = w_h[2];
+		bounds[0] = w_h[1];
+		bounds[1] = w_h[2];
 	}
-	stripe = x_start - 1;
-	while (++stripe <= x_end)
+}
+
+static inline void	draw_sprite_stripes(t_engine *eng, double trans[2],
+						int w_h[5], int bounds[2], t_sprite *s)
+{
+	int	stripe;
+
+	stripe = bounds[0] - 1;
+	while (++stripe <= bounds[1])
 	{
 		if (trans[1] < FP_TO_FLOAT(eng->z_buffer[stripe].perp_wall_dist))
 		{
@@ -76,6 +77,21 @@ static void	render_sprite(t_engine *eng, t_sprite *s, t_lut *lut)
 				draw_object_stripe(eng, stripe, w_h, s);
 		}
 	}
+}
+
+static void	render_sprite(t_engine *eng, t_sprite *s, t_lut *lut)
+{
+	double	sp[2];
+	double	trans[2];
+	int		w_h[5];
+	int		bounds[2];
+
+	if (get_sprite_coords(eng, s->pos.d.x, s->pos.d.y, sp, trans) <= 0.1)
+		return ;
+	calc_object_projection(eng, trans, w_h);
+	s->shade = lut->shade_table[sh_idx(trans[1])];
+	get_draw_bounds(eng, trans, w_h, bounds, s);
+	draw_sprite_stripes(eng, trans, w_h, bounds, s);
 }
 
 void	draw_monsters_3d(t_engine *eng)

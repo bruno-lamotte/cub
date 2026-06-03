@@ -3,12 +3,12 @@
 
 typedef struct s_dda_state
 {
-	float	ray_dir_x;
-	float	ray_dir_y;
-	float	delta_dist_x;
-	float	delta_dist_y;
-	float	side_dist_x;
-	float	side_dist_y;
+	double	ray_dir_x;
+	double	ray_dir_y;
+	double	delta_dist_x;
+	double	delta_dist_y;
+	double	side_dist_x;
+	double	side_dist_y;
 	int		step_x;
 	int		step_y;
 	int		side;
@@ -17,42 +17,42 @@ typedef struct s_dda_state
 
 static void	init_ray_steps(t_player_rt *p, t_ray_data *out, t_dda_state *s)
 {
-	if (s->ray_dir_x < 0.0f)
+	if (s->ray_dir_x < 0.0)
 	{
 		s->step_x = -1;
-		s->side_dist_x = ((float)p->pos.d.x - out->map_x) * s->delta_dist_x;
+		s->side_dist_x = (p->pos.d.x - (double)out->map_x) * s->delta_dist_x;
 	}
 	else
 	{
 		s->step_x = 1;
-		s->side_dist_x = (out->map_x + 1.0f - (float)p->pos.d.x) * s->delta_dist_x;
+		s->side_dist_x = ((double)out->map_x + 1.0 - p->pos.d.x) * s->delta_dist_x;
 	}
-	if (s->ray_dir_y < 0.0f)
+	if (s->ray_dir_y < 0.0)
 	{
 		s->step_y = -1;
-		s->side_dist_y = ((float)p->pos.d.y - out->map_y) * s->delta_dist_y;
+		s->side_dist_y = (p->pos.d.y - (double)out->map_y) * s->delta_dist_y;
 	}
 	else
 	{
 		s->step_y = 1;
-		s->side_dist_y = (out->map_y + 1.0f - (float)p->pos.d.y) * s->delta_dist_y;
+		s->side_dist_y = ((double)out->map_y + 1.0 - p->pos.d.y) * s->delta_dist_y;
 	}
 }
 
 static void	init_ray(double cam_x, t_player_rt *p, t_ray_data *out, t_dda_state *s)
 {
-	s->ray_dir_x = (float)p->dir.d.x + (float)p->plane.d.x * cam_x;
-	s->ray_dir_y = (float)p->dir.d.y + (float)p->plane.d.y * cam_x;
+	s->ray_dir_x = p->dir.d.x + p->plane.d.x * cam_x;
+	s->ray_dir_y = p->dir.d.y + p->plane.d.y * cam_x;
 	out->map_x = (int)p->pos.d.x;
 	out->map_y = (int)p->pos.d.y;
-	if (s->ray_dir_x == 0.0f)
-		s->delta_dist_x = 1e30f;
+	if (s->ray_dir_x == 0.0)
+		s->delta_dist_x = 1e30;
 	else
-		s->delta_dist_x = fabsf(1.0f / s->ray_dir_x);
-	if (s->ray_dir_y == 0.0f)
-		s->delta_dist_y = 1e30f;
+		s->delta_dist_x = fabs(1.0 / s->ray_dir_x);
+	if (s->ray_dir_y == 0.0)
+		s->delta_dist_y = 1e30;
 	else
-		s->delta_dist_y = fabsf(1.0f / s->ray_dir_y);
+		s->delta_dist_y = fabs(1.0 / s->ray_dir_y);
 	init_ray_steps(p, out, s);
 	s->hit = 0;
 	s->side = 0;
@@ -99,38 +99,36 @@ static void	perform_dda(t_ray_data *out, t_dda_state *s, t_player_rt *p,
 	}
 }
 
-static float	get_dda_dist(t_dda_state *s, t_ray_data *out, t_player_rt *p)
+static double	get_dda_dist(t_dda_state *s)
 {
-	float	dist;
+	double	dist;
 
 	if (s->side == 0)
-		dist = ((float)out->map_x - (float)p->pos.d.x
-				+ (1.0f - (float)s->step_x) * 0.5f) / s->ray_dir_x;
+		dist = s->side_dist_x - s->delta_dist_x;
 	else
-		dist = ((float)out->map_y - (float)p->pos.d.y
-				+ (1.0f - (float)s->step_y) * 0.5f) / s->ray_dir_y;
-	if (dist <= 0.0f)
-		return (0.1f);
-	if (dist > 30000.0f)
-		return (30000.0f);
+		dist = s->side_dist_y - s->delta_dist_y;
+	if (dist <= 0.0)
+		return (0.1);
+	if (dist > 30000.0)
+		return (30000.0);
 	return (dist);
 }
 
 static void	fill_ray_out(t_ray_data *out, t_dda_state *s, t_player_rt *p,
 	void *blob)
 {
-	float	dist;
-	float	wx;
+	double	dist;
+	double	wx;
 
 	if (get_map_flags(blob)[out->map_y * get_map_width(get_blob_hdr(blob))
 			+ out->map_x] & CELL_HAS_WALL)
 	{
-		dist = get_dda_dist(s, out, p);
+		dist = get_dda_dist(s);
 		if (s->side == 0)
-			wx = (float)p->pos.d.y + dist * s->ray_dir_y;
+			wx = p->pos.d.y + dist * s->ray_dir_y;
 		else
-			wx = (float)p->pos.d.x + dist * s->ray_dir_x;
-		wx -= floorf(wx);
+			wx = p->pos.d.x + dist * s->ray_dir_x;
+		wx -= floor(wx);
 		out->perp_wall_dist = DOUBLE_TO_FP(dist);
 		out->side = s->side;
 		out->wall_x = DOUBLE_TO_FP(wx);
@@ -142,9 +140,9 @@ static void	fill_ray_out(t_ray_data *out, t_dda_state *s, t_player_rt *p,
 void	cast_ray(t_worker *w, int x, t_ray_data *out)
 {
 	t_dda_state	s;
-	float		cam_x;
+	double		cam_x;
 
-	cam_x = 2.0f * x / (float)w->screen->win_width - 1.0f;
+	cam_x = 2.0 * x / (double)w->screen->win_width - 1.0;
 	init_ray(cam_x, w->player, out, &s);
 	perform_dda(out, &s, w->player, w->blob);
 	fill_ray_out(out, &s, w->player, w->blob);

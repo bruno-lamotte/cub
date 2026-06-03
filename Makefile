@@ -2,7 +2,7 @@ NAME = cub
 
 CC = cc
 MAKEFLAGS += -j16
-CFLAGS = -O3 -g -Wall -Wextra -lpthread
+CFLAGS = -O3 -ffast-math -g -Wall -Wextra -lpthread -flto
 RM = rm -rf
 
 OBJ_DIR = objects
@@ -47,6 +47,9 @@ SRCS = \
 	srcs/exec/raycasting.c \
 	srcs/exec/draw_column.c \
 	srcs/exec/draw_pixels.c \
+	srcs/exec/draw_floor.c \
+	srcs/exec/draw_floor_utils.c \
+	srcs/exec/exec_utils.c \
 	srcs/exec/light_sources/light_init.c \
 	srcs/exec/light_sources/light_los.c \
 	srcs/exec/light_sources/light_compute.c \

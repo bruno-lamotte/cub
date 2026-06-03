@@ -16,6 +16,7 @@ void	worker_render_slice(void *arg, t_worker *w)
 		draw_column(x, worker, &worker->z_buffer[x]);
 		x++;
 	}
+	render_floor_slice(worker);
 }
 
 static void	execute_worker_job(t_thread_pool *pool, t_job job, t_worker *w)

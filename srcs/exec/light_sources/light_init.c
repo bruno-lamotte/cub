@@ -17,6 +17,7 @@ static void	init_light_properties(t_engine *eng, t_light *l, int idx,
 		l->is_alarm = 1;
 		l->is_active = eng->data->obj_defs[idx].pad;
 	}
+	l->radius_sq = l->radius * l->radius;
 	l->is_triggered = 0;
 }
 

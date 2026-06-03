@@ -1,28 +1,5 @@
 #include "cub.h"
 
-static int	clamp_idx(int idx)
-{
-	if (idx < 0)
-		return (0);
-	if (idx >= DIST_MAX)
-		return (DIST_MAX - 1);
-	return (idx);
-}
-
-static float	clamp_float(float val)
-{
-	if (val > 1.0f)
-		return (1.0f);
-	return (val);
-}
-
-static int	clamp_color(int val)
-{
-	if (val > 255)
-		return (255);
-	return (val);
-}
-
 static void	shift_p(double *p, t_ray_data *ray)
 {
 	if (ray->side == 0)
@@ -45,26 +22,6 @@ static void	render_ceiling(t_draw *d, t_screen *screen, t_lut *lut, int y)
 {
 	(void)lut;
 	put_pixel(&screen->img, d->x, y, 0x000000);
-}
-
-static void	render_floor(t_draw *d, t_worker *w, t_ray_data *ray, int y)
-{
-	double	p[3];
-	float	sh[2];
-	int		c[3];
-	int		idx;
-
-	p[0] = (float)w->screen->win_height / (2.0f * y - (float)w->screen->win_height);
-	idx = clamp_idx((int)(p[0] * 10.0f));
-	p[1] = w->player->pos.d.x + p[0] * FP_TO_FLOAT(ray->ray_dir.fp.x);
-	p[2] = w->player->pos.d.y + p[0] * FP_TO_FLOAT(ray->ray_dir.fp.y);
-	sh[1] = clamp_float(get_alarm_light_at_point(p[1], p[2], w->blob, w->engine));
-	sh[0] = compute_light_at_point(p[1], p[2], w->blob, w->engine);
-	sh[0] = clamp_float(((get_lut_bdef(w->blob)->shade_table[idx] * 0.2f) + sh[0]) * GAMMA);
-	c[0] = clamp_color((int)(0x33 * sh[0] + 255.0f * sh[1]));
-	c[1] = clamp_color((int)(0x33 * sh[0]));
-	c[2] = clamp_color((int)(0x33 * sh[0]));
-	put_pixel(&w->screen->img, d->x, y, (c[0] << 16) | (c[1] << 8) | c[2]);
 }
 
 static void	render_wall_pixel(t_draw *d, t_screen *scr, t_ray_data *ray,
@@ -98,9 +55,7 @@ static void	render_pixel_row(t_draw *d, t_worker *w, t_ray_data *ray,
 {
 	if (y < d->draw_start)
 		render_ceiling(d, w->screen, lut, y);
-	else if (y > d->draw_end)
-		render_floor(d, w, ray, y);
-	else
+	else if (y <= d->draw_end)
 		render_wall_pixel(d, w->screen, ray, sh_n, sh_a, y);
 }
 
@@ -121,6 +76,6 @@ void	render_pixels(t_draw *d, t_worker *w, t_ray_data *ray,
 	sh_n = clamp_float(((lut->shade_table[y] * 0.2f)
 				+ compute_light_at_point(p[1], p[2], w->blob, w->engine)) * GAMMA);
 	y = -1;
-	while (++y < w->screen->win_height)
+	while (++y <= d->draw_end)
 		render_pixel_row(d, w, ray, lut, sh_n, sh_a, y);
 }

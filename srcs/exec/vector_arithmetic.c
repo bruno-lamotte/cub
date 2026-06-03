@@ -18,6 +18,7 @@ void	rotate_vec_fp(t_vec2 *v, t_fp fp_cos, t_fp fp_sin)
 
 float	fast_inv_sqrt(float number)
 {
+	/*
 	t_conv		conv;
 	float		x2;
 	float		y;
@@ -28,6 +29,8 @@ float	fast_inv_sqrt(float number)
 	y = conv.f;
 	y = y * (1.5f - (x2 * y * y));
 	return (y);
+	*/
+	return (1.0f / sqrtf(number));
 }
 
 double	get_door_ratio(int mx, int my, int width, void *blob)

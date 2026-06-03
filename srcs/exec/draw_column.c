@@ -96,6 +96,7 @@ void	draw_column(int x, t_worker *w, t_ray_data *ray)
 	lut = get_lut_bdef(w->blob);
 	d.x = x;
 	init_projection(&d, ray, w->screen->win_height);
+	ray->draw_end = d.draw_end;
 	init_texture_mapping(&d, ray, &ray->ray_dir, w->blob, w->screen->win_height);
 	render_pixels(&d, w, ray, lut);
 }

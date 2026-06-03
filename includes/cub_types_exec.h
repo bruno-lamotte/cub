@@ -218,6 +218,7 @@ typedef struct s_ray_data
     int     map_y;
     t_fp    wall_x;
     t_vec2  ray_dir;
+    int     draw_end;
 }   		t_ray_data;
 
 typedef struct s_worker
@@ -296,10 +297,11 @@ typedef struct s_sprite
 
 typedef struct s_light
 {
-	double	x;
-	double	y;
+	float	x;
+	float	y;
 	float	intensity;
 	float	radius;
+	float	radius_sq;
 	int		is_alarm;
 	int		is_active;
 	int		is_triggered;
@@ -355,5 +357,16 @@ typedef struct s_bfs
 	int		height;
 	void	*blob;
 }				t_bfs;
+
+typedef struct s_floor_row
+{
+	double	p0;
+	double	fx;
+	double	fy;
+	double	step_x;
+	double	step_y;
+	float	ambient_shade;
+	int		y;
+}				t_floor_row;
 
 #endif

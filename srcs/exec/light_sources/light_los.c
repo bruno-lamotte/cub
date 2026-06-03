@@ -1,26 +1,37 @@
 #include "cub.h"
 #include <math.h>
 
-static int	check_los_shadow(double mx, double my, double px, double py)
+typedef struct s_map_data
 {
-	double	fx;
-	double	fy;
+	uint8_t		*flags;
+	t_door_rt	*doors;
+	int			w;
+	int			h;
+	uint32_t	door_count;
+	int			target_x;
+	int			target_y;
+}	t_map_data;
+
+static inline int	check_los_shadow(float mx, float my, float px, float py)
+{
+	float	fx;
+	float	fy;
 
 	fx = px - (int)px;
 	fy = py - (int)py;
-	if (fabs(fx - 0.99) < 1e-9 && mx >= (int)px + 1)
+	if (fabsf(fx - 0.99f) < 1e-6f && mx >= (int)px + 1)
 		return (0);
-	if (fabs(fx - 0.01) < 1e-9 && mx <= (int)px)
+	if (fabsf(fx - 0.01f) < 1e-6f && mx <= (int)px)
 		return (0);
-	if (fabs(fy - 0.99) < 1e-9 && my >= (int)py + 1)
+	if (fabsf(fy - 0.99f) < 1e-6f && my >= (int)py + 1)
 		return (0);
-	if (fabs(fy - 0.01) < 1e-9 && my <= (int)py)
+	if (fabsf(fy - 0.01f) < 1e-6f && my <= (int)py)
 		return (0);
 	return (1);
 }
 
-static void	init_los_steps(double mx, double my, double d[4], double side[2],
-				int step[4])
+static inline void	init_los_steps(float mx, float my, float d[4], float side[2],
+						int step[4])
 {
 	step[2] = (int)mx;
 	step[3] = (int)my;
@@ -32,7 +43,7 @@ static void	init_los_steps(double mx, double my, double d[4], double side[2],
 	else
 	{
 		step[0] = 1;
-		side[0] = (step[2] + 1.0 - mx) * d[2];
+		side[0] = (step[2] + 1.0f - mx) * d[2];
 	}
 	if (d[1] < 0)
 	{
@@ -42,59 +53,103 @@ static void	init_los_steps(double mx, double my, double d[4], double side[2],
 	else
 	{
 		step[1] = 1;
-		side[1] = (step[3] + 1.0 - my) * d[3];
+		side[1] = (step[3] + 1.0f - my) * d[3];
 	}
 }
 
-static void	init_los_dda(double mx, double my, double px, double py,
-				double d[4], double side[2], int step[4], int target[2])
+static inline void	init_los_dda(float mx, float my, float px, float py,
+						float d[4], float side[2], int step[4])
 {
 	d[0] = px - mx;
 	d[1] = py - my;
-	if (d[0] == 0)
-		d[2] = 1e30;
+	if (d[0] == 0.0f)
+		d[2] = 1e30f;
 	else
-		d[2] = fabs(1.0 / d[0]);
-	if (d[1] == 0)
-		d[3] = 1e30;
+		d[2] = fabsf(1.0f / d[0]);
+	if (d[1] == 0.0f)
+		d[3] = 1e30f;
 	else
-		d[3] = fabs(1.0 / d[1]);
-	target[0] = (int)px;
-	target[1] = (int)py;
+		d[3] = fabsf(1.0f / d[1]);
 	init_los_steps(mx, my, d, side, step);
 }
 
-static void	dda_step(double d[4], double side[2], int step[4])
+static inline int	check_door_walkable(t_map_data *map, int idx)
 {
-	if (side[0] < side[1])
+	uint32_t	i;
+
+	i = -1;
+	while (++i < map->door_count)
 	{
-		side[0] += d[2];
-		step[2] += step[0];
+		if (map->doors[i].map_id == (uint32_t)idx)
+		{
+			if (map->doors[i].open_ratio_255 > 200)
+				return (1);
+			break ;
+		}
+	}
+	return (0);
+}
+
+static inline void	dda_step(float d[4], int step[4], int pos[2], float s[2])
+{
+	if (s[0] < s[1])
+	{
+		s[0] += d[2];
+		pos[0] += step[0];
 	}
 	else
 	{
-		side[1] += d[3];
-		step[3] += step[1];
+		s[1] += d[3];
+		pos[1] += step[1];
 	}
+}
+
+static inline int	run_dda(int step[4], float d[4], float side[2],
+						t_map_data *map)
+{
+	int		pos[2];
+	float	s[2];
+
+	pos[0] = step[2];
+	pos[1] = step[3];
+	s[0] = side[0];
+	s[1] = side[1];
+	while (pos[0] != map->target_x || pos[1] != map->target_y)
+	{
+		dda_step(d, step, pos, s);
+		if (pos[0] == map->target_x && pos[1] == map->target_y)
+			break ;
+		if (pos[0] < 0 || pos[0] >= map->w || pos[1] < 0 || pos[1] >= map->h)
+			return (0);
+		if ((map->flags[pos[1] * map->w + pos[0]] & CELL_HAS_WALL))
+			return (0);
+		if ((map->flags[pos[1] * map->w + pos[0]] & CELL_HAS_DOOR)
+			&& !check_door_walkable(map, pos[1] * map->w + pos[0]))
+			return (0);
+	}
+	return (1);
 }
 
 int	check_los(t_vec2 p1, t_vec2 p2, void *blob)
 {
-	double	d[4];
-	double	side[2];
-	int		step[4];
-	int		target[2];
+	t_map_data	map;
+	t_blob_hdr	*hdr;
+	int			step[4];
+	float		d[4];
+	float		side[2];
 
-	if (!check_los_shadow(p1.d.x, p1.d.y, p2.d.x, p2.d.y))
+	hdr = get_blob_hdr(blob);
+	map.w = hdr->map.map_data.width;
+	map.h = hdr->map.map_data.height;
+	map.flags = get_map_flags(blob);
+	map.doors = get_door_rt(blob);
+	map.door_count = hdr->door_rt.count;
+	map.target_x = (int)p2.d.x;
+	map.target_y = (int)p2.d.y;
+	if (!check_los_shadow((float)p1.d.x, (float)p1.d.y,
+			(float)p2.d.x, (float)p2.d.y))
 		return (0);
-	init_los_dda(p1.d.x, p1.d.y, p2.d.x, p2.d.y, d, side, step, target);
-	while (step[2] != target[0] || step[3] != target[1])
-	{
-		dda_step(d, side, step);
-		if (step[2] == target[0] && step[3] == target[1])
-			break ;
-		if (!is_walkable(step[2], step[3], blob))
-			return (0);
-	}
-	return (1);
+	init_los_dda((float)p1.d.x, (float)p1.d.y, (float)p2.d.x, (float)p2.d.y,
+		d, side, step);
+	return (run_dda(step, d, side, &map));
 }

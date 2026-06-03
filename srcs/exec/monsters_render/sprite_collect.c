@@ -10,9 +10,10 @@ double	get_sprite_coords(t_engine *eng, double sx, double sy,
 	sp[1] = sy - eng->player->pos.d.y;
 	det = 1.0 / (eng->player->plane.d.x * eng->player->dir.d.y
 			- eng->player->dir.d.x * eng->player->plane.d.y);
-	trans[0] = det * (eng->player->dir.d.y * sp[0] - eng->player->dir.d.x * sp[1]);
-	trans[1] = det * (-eng->player->plane.d.y * sp[0] + eng->player->plane.d.x
-			* sp[1]);
+	trans[0] = det * (eng->player->dir.d.y * sp[0]
+			- eng->player->dir.d.x * sp[1]);
+	trans[1] = det * (-eng->player->plane.d.y * sp[0]
+			+ eng->player->plane.d.x * sp[1]);
 	return (trans[1]);
 }
 
@@ -47,9 +48,11 @@ int	fill_obj_sprite(t_engine *eng, t_sprite *sprites, int count,
 	double	sp[2];
 	double	trans[2];
 	char	sym;
+	int		idx;
 
-	sym = eng->data->obj_defs[get_map_occ_ids(eng->blob)[y
-			* get_map_width(get_blob_hdr(eng->blob)) + x]].symbol;
+	idx = get_map_occ_ids(eng->blob)[y
+		* get_map_width(get_blob_hdr(eng->blob)) + x];
+	sym = eng->data->obj_defs[idx].symbol;
 	if (sym == 'L')
 		return (count);
 	sprites[count].pos.d.x = x + 0.5;

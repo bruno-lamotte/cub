@@ -16,6 +16,9 @@ void			submit_job(t_thread_pool *pool, void (*func)(void *, t_worker *), void *a
 void			wait_for_jobs(t_thread_pool *pool);
 void			worker_render_slice(void *arg, t_worker *w);
 void			put_pixel(t_img *img, int x, int y, int color);
+int				clamp_idx(int idx);
+float			clamp_float(float val);
+int				clamp_color(int val);
 unsigned int	blend_colors(unsigned int src, unsigned int dst, unsigned char alpha);
 void			draw_minimap(t_engine *engine);
 void			draw_minimap_monsters(t_engine *eng, t_vec2 c, int radius,
@@ -37,7 +40,14 @@ void			draw_single_map_obj(t_engine *eng, t_interact_obj *obj, t_vec2 p, int is_
 uint8_t			get_wall_tex_id(t_ray_data *ray, t_vec2 *ray_dir, void *blob);
 void			init_projection(t_draw *d, t_ray_data *ray, int win_height);
 void			render_pixels(t_draw *d, t_worker *w, t_ray_data *ray, t_lut *lut);
+void			render_floor_slice(t_worker *w);
 void			draw_column(int x, t_worker *w, t_ray_data *ray);
+
+// srcs/exec/draw_floor_utils.c
+void			init_row_params(t_worker *w, int y, t_floor_row *r, t_lut *lut);
+void			draw_floor_pixel(t_worker *w, t_floor_row *r, int x, float sh[2]);
+
+float			get_diff(float a, float b);
 
 // srcs/exec/vector_arithmetic.c
 void			rotate_vec_fp(t_vec2 *v, t_fp fp_cos, t_fp fp_sin);
