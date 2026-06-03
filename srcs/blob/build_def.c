@@ -1,48 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_def.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/02 20:09:58 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/06/02 20:19:11 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
-/*
-
-typedef struct	s_bdef_wall
+void	build_wall_bdef(t_wall_def *def, t_bdef_wall *bdef, uint8_t count)
 {
-	uint8_t tex_north;
-	uint8_t tex_south;
-	uint8_t tex_west;
-	uint8_t tex_east;
-}				t_bdef_wall;
-
-typedef struct	s_bdef_air
-{
-	uint8_t tex_floor;
-	uint8_t tex_ceiling;
-}				t_bdef_air;
-
-typedef struct	s_bdef_door
-{
-	uint8_t tex_front;
-	uint8_t tex_back;
-	uint8_t tex_side;
-	uint8_t	padding;
-}				t_bdef_door;
-
-typedef struct	s_bdef_monster
-{
-	uint8_t	tex;
-	uint8_t	initial_hp;
-	uint8_t size_pc;
-	uint8_t	padding;
-}				t_bdef_monster;
-
-typedef struct	s_bdef_obj
-{
-	uint8_t	tex;
-	uint8_t size_pc;
-}				t_bdef_obj;
-
-*/
-
-void build_wall_bdef(t_wall_def *def, t_bdef_wall *bdef, uint8_t count)
-{
-	uint8_t i;
+	uint8_t	i;
 
 	i = 0;
 	while (i < count)
@@ -55,9 +27,9 @@ void build_wall_bdef(t_wall_def *def, t_bdef_wall *bdef, uint8_t count)
 	}
 }
 
-void build_air_bdef(t_air_def *def, t_bdef_air *bdef, uint8_t count)
+void	build_air_bdef(t_air_def *def, t_bdef_air *bdef, uint8_t count)
 {
-	uint8_t i;
+	uint8_t	i;
 
 	i = 0;
 	while (i < count)
@@ -68,9 +40,9 @@ void build_air_bdef(t_air_def *def, t_bdef_air *bdef, uint8_t count)
 	}
 }
 
-void build_door_bdef(t_door_def *def, t_bdef_door *bdef, uint8_t count)
+void	build_door_bdef(t_door_def *def, t_bdef_door *bdef, uint8_t count)
 {
-	uint8_t i;
+	uint8_t	i;
 
 	i = 0;
 	while (i < count)
@@ -82,9 +54,9 @@ void build_door_bdef(t_door_def *def, t_bdef_door *bdef, uint8_t count)
 	}
 }
 
-void build_mstr_bdef(t_monster_def *def, t_bdef_monster *bdef, uint8_t count)
+void	build_mstr_bdef(t_monster_def *def, t_bdef_monster *bdef, uint8_t count)
 {
-	uint8_t i;
+	uint8_t	i;
 
 	i = 0;
 	while (i < count)
@@ -96,9 +68,9 @@ void build_mstr_bdef(t_monster_def *def, t_bdef_monster *bdef, uint8_t count)
 	}
 }
 
-void build_obj_bdef(t_obj_def *def, t_bdef_obj *bdef, uint8_t count)
+void	build_obj_bdef(t_obj_def *def, t_bdef_obj *bdef, uint8_t count)
 {
-	uint8_t i;
+	uint8_t	i;
 
 	i = 0;
 	while (i < count)
@@ -122,10 +94,10 @@ typedef struct	s_bdef_tex
 }				t_bdef_tex;
 */
 
-void build_tex_bdef(t_data *d, t_bdef_tex *bdef, uint8_t count)
+void	build_tex_bdef(t_data *d, t_bdef_tex *bdef, uint8_t count)
 {
-	uint8_t i;
-	uint32_t off;
+	uint8_t		i;
+	uint32_t	off;
 
 	i = 0;
 	off = 0;
@@ -135,7 +107,6 @@ void build_tex_bdef(t_data *d, t_bdef_tex *bdef, uint8_t count)
 			bdef[i].color = d->textures_defs[i].color;
 		else
 		{
-			// printf("%d | TEST off = %u\n", i, off);
 			bdef[i].height = d->img_tab[i].height;
 			bdef[i].width = d->img_tab[i].width;
 			bdef[i].offset = off;
@@ -143,47 +114,42 @@ void build_tex_bdef(t_data *d, t_bdef_tex *bdef, uint8_t count)
 		}
 		i++;
 	}
-	printf("build tex check allignement with hgeader offset -> END off = %u\n", off);
+	printf("check allignement with hdr offset -> END off = %u\n", off);
 }
 
-static void build_shade_lut(t_lut *lut)
+static void	build_shade_lut(t_lut *lut)
 {
-    int     i;
-    float   distance;
-    float   intensity;
-    float   max_visible_dist;
-    float   factor;
+	int		i;
+	float	distance;
+	float	intensity;
+	float	max_visible_dist;
+	float	factor;
 
-    i = 0;
-    max_visible_dist = 7.0f; // Completement noir a seulement 7 blocs !
-    while (i < DIST_MAX)
-    {
-        distance = (float)i / 10.0f; // Resolution de 0.1 bloc
-        if (distance <= 0.5f)
-        {
-            intensity = 1.0f; // Pleine lumiere immediate a bout portant
-        }
-        else if (distance >= max_visible_dist)
-        {
-            intensity = 0.0f; // Noir absolu au-dela de 7 blocs
-        }
-        else
-        {
-            // Attenuation quadratique realiste (style faisceau de lampe torche)
-            factor = 1.0f - ((distance - 0.5f) / (max_visible_dist - 0.5f));
-            intensity = factor * factor;
-        }
-        lut->shade_table[i] = intensity;
-        i++;
-    }
+	i = 0;
+	max_visible_dist = 7.0f;
+	while (i < DIST_MAX)
+	{
+		distance = (float)i / 10.0f;
+		if (distance <= 0.5f)
+			intensity = 1.0f;
+		else if (distance >= max_visible_dist)
+			intensity = 0.0f;
+		else
+		{
+			factor = 1.0f - ((distance - 0.5f) / (max_visible_dist - 0.5f));
+			intensity = factor * factor;
+		}
+		lut->shade_table[i] = intensity;
+		i++;
+	}
 }
 
-void    build_lut_bdef(t_lut *lut)
+void	build_lut_bdef(t_lut *lut)
 {
-    build_shade_lut(lut);
+	build_shade_lut(lut);
 }
 
-void build_bdef(t_data *d, void *blob)
+void	build_bdef(t_data *d, void *blob)
 {
 	build_wall_bdef(d->walls_defs, get_wall_bdef(blob), d->walls_len);
 	build_air_bdef(d->airs_defs, get_air_bdef(blob), d->airs_len);

@@ -43,4 +43,12 @@ t_bdef_obj		*get_obj_bdef(void *blob);
 t_bdef_tex		*get_tex_bdef(void *blob);
 t_lut			*get_lut_bdef(void *blob);
 
+typedef struct	s_tmp_build_px
+{
+	t_bdef_tex	*tex_defs;
+	uint32_t	*dest;
+	t_img		*src_img;
+	uint32_t	*tex_dest;
+}				t_tmp_build_px;
+
 #endif

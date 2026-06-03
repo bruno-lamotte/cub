@@ -39,7 +39,7 @@ bool	check_player_section(t_parsing *p, size_t len);
 bool	check_mandatory_map_section(t_parsing *p, size_t len);
 bool	check_bonus_map_section(t_parsing *p, size_t len);
 
-bool	check_section(char *name, bool (*func)(t_parsing*, size_t), t_parsing *p);
+bool	check_s(char *n, bool (*f)(t_parsing *, size_t), t_parsing *p, size_t l);
 
 bool	validate_map(t_data *d, t_index *i);
 bool	is_map_solvable(t_data *d);
@@ -72,6 +72,19 @@ void	free_screen(t_screen *s);
 bool	init_mlx(t_screen *screen, char *title);
 void	free_img_tab(void *mlx, t_img *img, size_t lim);
 bool	get_all_tex(t_data *data, t_screen *s);
-void	draw_tex_lib(t_screen *s, t_data *d);
+void	draw_tex_lib(t_screen *s, t_data *d, int i);
+
+typedef struct	s_tmp_map_data
+{
+	char		**map;
+	char		**bonus;
+	char		*wall_sym;
+	char		*air_sym;
+	char		*others_sym;
+	bool		**mask;
+	size_t		c;
+	size_t		r;
+	t_perr		err;
+}				t_tmp_map_data;
 
 #endif

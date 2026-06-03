@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_rt.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/02 20:53:00 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/06/03 00:25:30 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
 void build_cell(t_map_soa *soa_map, t_tmp_cell *cell, t_data *data)
@@ -56,6 +68,60 @@ void build_cell(t_map_soa *soa_map, t_tmp_cell *cell, t_data *data)
 			soa_map->block_id[cell->soa_idx] = (uint8_t)res;
 	}
 }
+
+// static void	cel_manip(t_map_soa *map, t_tmp_cell *c, uint32_t flag, int16_t *r)
+// {
+// 	if (flag == CELL_HAS_WALL || flag == CELL_HAS_WALL)
+// 	{
+// 		map->block_id[c->soa_idx] = (uint8_t)*r;
+// 		map->flags[c->soa_idx] |= flag;
+// 	}
+// 	else
+// 	{
+// 		map->occ_id[c->soa_idx] = (uint8_t)*r;
+// 		map->flags[c->soa_idx] |= flag;
+// 	}
+// 	return ;
+// }
+
+// void build_cell(t_map_soa *soa_map, t_tmp_cell *cell, t_data *data)
+// {
+// 	int16_t res;
+
+// 	if (cell->m == ' ')
+// 		return ;
+// 	res = get_block_id(cell->m, data, T_WALL);
+// 	if (res >= 0)
+// 		return (cel_manip(soa_map, cell, CELL_HAS_WALL, &res));
+// 	else
+// 	{
+// 		res = get_block_id(cell->m, data, T_AIR);
+// 		if (res >= 0)
+// 			return (cel_manip(soa_map, cell, CELL_HAS_WALL, &res));
+// 	}
+// 	res = get_block_id(cell->m, data, T_DOOR);
+// 	if (res >= 0)
+// 		cel_manip(soa_map, cell, CELL_HAS_DOOR, &res);
+// 	else
+// 	{
+// 		res = get_block_id(cell->m, data, T_OBJ);
+// 		if (res >= 0)
+// 			cel_manip(soa_map, cell, CELL_HAS_OBJ, &res);
+// 		else
+// 		{
+// 			res = get_block_id(cell->m, data, T_MSTR);
+// 			if (res >= 0)
+// 				cel_manip(soa_map, cell, CELL_HAS_MSTR, &res);
+// 		}
+// 	}
+// 	cel_manip(soa_map, cell, CELL_HAS_AIR, &res);
+// 	if (cell->b)
+// 	{
+// 		res = get_block_id(cell->b, data, T_AIR);
+// 		if (res >= 0)
+// 			soa_map->block_id[cell->soa_idx] = (uint8_t)res;
+// 	}
+// }
 
 /*
 typedef struct	s_door_rt

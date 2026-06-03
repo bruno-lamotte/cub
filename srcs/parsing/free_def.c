@@ -1,30 +1,42 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_def.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/28 14:28:56 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/05/28 14:30:16 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
-void free_textures_def(t_texture_def **tex, size_t len)
+void	free_textures_def(t_texture_def **tex, size_t len)
 {
-    size_t i;
+	size_t	i;
 
-    i = 0;
-    if (!(*tex))
-        return ;
-    while(i < len)
-    {
-        if (!(*tex)[i].is_color && (*tex)[i].path)
-            free((*tex)[i].path);
-        if ((*tex)[i].name)
-            free((*tex)[i].name);
-        i++;
-    }
-    free((*tex));
+	i = 0;
+	if (!(*tex))
+		return ;
+	while (i < len)
+	{
+		if (!(*tex)[i].is_color && (*tex)[i].path)
+			free((*tex)[i].path);
+		if ((*tex)[i].name)
+			free((*tex)[i].name);
+		i++;
+	}
+	free((*tex));
 	*tex = NULL;
 }
 
-void free_all_def(t_data *d)
+void	free_all_def(t_data *d)
 {
 	if (!d)
 		return ;
 	if (d->textures_defs)
-        free_textures_def(&d->textures_defs, d->textures_len);
+		free_textures_def(&d->textures_defs, d->textures_len);
 	if (d->walls_defs)
 		free(d->walls_defs);
 	if (d->airs_defs)
@@ -43,7 +55,7 @@ void free_all_def(t_data *d)
 		free_str_tab(d->b_map);
 }
 
-void free_ids(t_data *d)
+void	free_ids(t_data *d)
 {
 	if (!d)
 		return ;
@@ -63,7 +75,7 @@ void free_ids(t_data *d)
 		free(d->player_ids);
 }
 
-void free_preprocessing_data(t_data *d)
+void	free_preprocessing_data(t_data *d)
 {
 	free_all_def(d);
 	free_ids(d);

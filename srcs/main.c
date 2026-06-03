@@ -72,10 +72,10 @@ int main(int ac, char **av)
 			init_all_ai_behaviors(engine->slr, engine);
 	}
 
-	mlx_hook(screen->win_ptr, 2, 1L<<0, key_press, engine);
-	mlx_hook(screen->win_ptr, 3, 1L<<1, key_release, engine);
-	mlx_hook(screen->win_ptr, 17, 0L, close_window, engine);
-	mlx_loop_hook(screen->mlx_ptr, game_loop, engine);
+	mlx_hook(screen->win_ptr, 2, 1L<<0, (void *)key_press, engine);
+	mlx_hook(screen->win_ptr, 3, 1L<<1, (void *)key_release, engine);
+	mlx_hook(screen->win_ptr, 17, 0L, (void *)close_window, engine);
+	mlx_loop_hook(screen->mlx_ptr, (void *)game_loop, engine);
 
 	// run game
 	mlx_loop(screen->mlx_ptr);

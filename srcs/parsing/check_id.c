@@ -1,19 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   check_id.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/26 20:26:21 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/05/26 20:37:01 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
 /*GET IDS ARRAYS*/
 
-static size_t all_ids_len(t_data *d)
+static size_t	all_ids_len(t_data *d)
 {
-	return ((size_t)\
-		(d->walls_len + d->airs_len + \
-		d->doors_len + d->monsters_len + \
-		d->obj_len + d->player_len));
+	return ((size_t)(d->walls_len + d->airs_len + d->doors_len
+		+ d->monsters_len + d->obj_len + d->player_len));
 }
 
-static bool add_char_if_single(char c, char *dest, size_t max_len)
+static bool	add_char_if_single(char c, char *dest, size_t max_len)
 {
-	size_t len;
-	size_t i;
+	size_t	len;
+	size_t	i;
 
 	i = 0;
 	len = ft_strlen(dest);
@@ -29,7 +39,7 @@ static bool add_char_if_single(char c, char *dest, size_t max_len)
 	return (true);
 }
 
-bool get_wall_ids(t_parsing *p, size_t max_len)
+bool	get_wall_ids(t_parsing *p, size_t max_len)
 {
 	t_index		*i;
 	t_wall_def	*w;
@@ -50,16 +60,15 @@ bool get_wall_ids(t_parsing *p, size_t max_len)
 		sym = w[y].symbol;
 		if (!add_char_if_single(sym, p->data->all_ids, max_len))
 			return (i->err = PERR_REPETED_SYM, free(out), false);
-		out[y] = sym;
-		y++;
+		out[y++] = sym;
 		i->line++;
 	}
-	out[y] = 0;
+	out[y++] = 0;
 	p->data->wall_ids = out;
 	return (true);
 }
 
-bool get_air_ids(t_parsing *p, size_t max_len)
+bool	get_air_ids(t_parsing *p, size_t max_len)
 {
 	t_index		*i;
 	t_air_def	*w;
@@ -80,8 +89,7 @@ bool get_air_ids(t_parsing *p, size_t max_len)
 		sym = w[y].symbol;
 		if (!add_char_if_single(sym, p->data->all_ids, max_len))
 			return (i->err = PERR_REPETED_SYM, free(out), false);
-		out[y] = sym;
-		y++;
+		out[y++] = sym;
 		i->line++;
 	}
 	out[y] = 0;
@@ -89,7 +97,7 @@ bool get_air_ids(t_parsing *p, size_t max_len)
 	return (true);
 }
 
-bool get_door_ids(t_parsing *p, size_t max_len)
+bool	get_door_ids(t_parsing *p, size_t max_len)
 {
 	t_index		*i;
 	t_door_def	*w;
@@ -110,8 +118,7 @@ bool get_door_ids(t_parsing *p, size_t max_len)
 		sym = w[y].symbol;
 		if (!add_char_if_single(sym, p->data->all_ids, max_len))
 			return (i->err = PERR_REPETED_SYM, free(out), false);
-		out[y] = sym;
-		y++;
+		out[y++] = sym;
 		i->line++;
 	}
 	out[y] = 0;
@@ -119,13 +126,13 @@ bool get_door_ids(t_parsing *p, size_t max_len)
 	return (true);
 }
 
-bool get_monster_ids(t_parsing *p, size_t max_len)
+bool	get_monster_ids(t_parsing *p, size_t max_len)
 {
-	t_index		*i;
-	t_monster_def *w;
-	size_t		y;
-	char		sym;
-	char		*out;
+	t_index			*i;
+	t_monster_def	*w;
+	size_t			y;
+	char			sym;
+	char			*out;
 
 	w = p->data->monsters_defs;
 	i = &p->idx;
@@ -140,8 +147,7 @@ bool get_monster_ids(t_parsing *p, size_t max_len)
 		sym = w[y].symbol;
 		if (!add_char_if_single(sym, p->data->all_ids, max_len))
 			return (i->err = PERR_REPETED_SYM, free(out), false);
-		out[y] = sym;
-		y++;
+		out[y++] = sym;
 		i->line++;
 	}
 	out[y] = 0;
@@ -149,7 +155,7 @@ bool get_monster_ids(t_parsing *p, size_t max_len)
 	return (true);
 }
 
-bool get_object_ids(t_parsing *p, size_t max_len)
+bool	get_object_ids(t_parsing *p, size_t max_len)
 {
 	t_index		*i;
 	t_obj_def	*w;
@@ -170,8 +176,7 @@ bool get_object_ids(t_parsing *p, size_t max_len)
 		sym = w[y].symbol;
 		if (!add_char_if_single(sym, p->data->all_ids, max_len))
 			return (i->err = PERR_REPETED_SYM, free(out), false);
-		out[y] = sym;
-		y++;
+		out[y++] = sym;
 		i->line++;
 	}
 	out[y] = 0;
@@ -179,13 +184,13 @@ bool get_object_ids(t_parsing *p, size_t max_len)
 	return (true);
 }
 
-bool get_player_ids(t_parsing *p, size_t max_len)
+bool	get_player_ids(t_parsing *p, size_t max_len)
 {
-	t_index		*i;
-	t_player_def *w;
-	size_t		y;
-	char		sym;
-	char		*out;
+	t_index			*i;
+	t_player_def	*w;
+	size_t			y;
+	char			sym;
+	char			*out;
 
 	w = p->data->player_defs;
 	i = &p->idx;
@@ -200,8 +205,7 @@ bool get_player_ids(t_parsing *p, size_t max_len)
 		sym = w[y].symbol;
 		if (!add_char_if_single(sym, p->data->all_ids, max_len))
 			return (i->err = PERR_REPETED_SYM, free(out), false);
-		out[y] = sym;
-		y++;
+		out[y++] = sym;
 		i->line++;
 	}
 	out[y] = 0;
@@ -209,12 +213,12 @@ bool get_player_ids(t_parsing *p, size_t max_len)
 	return (true);
 }
 
-bool get_ids(t_parsing *p)
+bool	get_ids(t_parsing *p)
 {
 	t_data	*d;
 	t_index	*i;
 	size_t	alloc_len;
-	
+
 	d = p->data;
 	i = &p->idx;
 	alloc_len = all_ids_len(d);

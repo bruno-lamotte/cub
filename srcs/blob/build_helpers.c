@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_helpers.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/02 20:51:57 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/06/02 20:52:47 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
-int16_t get_block_id(char sym, t_data *d, t_block_type type)
+int16_t	get_block_id(char sym, t_data *d, t_block_type type)
 {
-	int16_t i;
+	int16_t	i;
 	char	*arr;
 
 	if (type == T_WALL)
@@ -18,18 +30,18 @@ int16_t get_block_id(char sym, t_data *d, t_block_type type)
 	else
 		return (-1);
 	i = 0;
-	while(arr[i])
+	while (arr[i])
 	{
 		if (arr[i] == sym)
-			return(i);
+			return (i);
 		i++;
 	}
 	return (-1);
 }
 
-int16_t get_def_id(char *ids, char sym)
+int16_t	get_def_id(char *ids, char sym)
 {
-	int16_t i;
+	int16_t	i;
 
 	i = 0;
 	while (ids[i])
