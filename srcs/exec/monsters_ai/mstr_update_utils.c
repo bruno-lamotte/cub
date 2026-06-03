@@ -16,9 +16,15 @@ void	update_single_monster(t_monster_rt *m, t_engine *eng, t_worker *w)
 		+ (eng->player->pos.d.y - m->pos.d.y) * (eng->player->pos.d.y - m->pos.d.y);
 	is_in_alarm = (m->state == MSTR_STATE_ALARM);
 	if (eng->alarm_triggered && !is_in_alarm)
+	{
 		execute_slr_transition_by_id(eng, m, eng->slr->stim_alarm_heard_nbr);
+		execute_slr_transition(eng, m, "ACT_GO_TO_ALARM");
+	}
 	else if (!eng->alarm_triggered && is_in_alarm)
+	{
 		execute_slr_transition_by_id(eng, m, eng->slr->stim_alarm_off_nbr);
+		execute_slr_transition(eng, m, "ACT_RESUME_PATROL");
+	}
 	handle_auto_actions(eng, m);
 	run_grammar_transitions(m, eng, d2, detect_player(m, eng));
 	behavior = eng->slr->state_behaviors[m->state_stack[m->state_stack_top - 1]];

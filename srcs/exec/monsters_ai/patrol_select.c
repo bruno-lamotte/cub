@@ -3,7 +3,7 @@
 
 static int	is_cell_walkable(t_engine *eng, int x, int y)
 {
-	return (is_walkable(x, y, eng->blob));
+	return (is_walkable_for_routing(x, y, eng->blob));
 }
 
 int	is_bottleneck_cell(t_engine *eng, int x, int y)

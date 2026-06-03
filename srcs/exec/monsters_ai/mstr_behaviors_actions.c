@@ -33,3 +33,10 @@ void	mstr_reloc_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 	m->alert_timer = 0;
 	execute_slr_transition(eng, m, "ACT_RECALCULATE_PATROL");
 }
+
+void	mstr_attack_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
+{
+	(void)w;
+	m->alert_timer++;
+	mstr_chase(m, eng);
+}

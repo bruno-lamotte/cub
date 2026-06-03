@@ -51,6 +51,7 @@ t_player_rt		*init_player_rt(t_data *data);
 
 // srcs/exec/movement/
 int				is_walkable(int x, int y, void *blob);
+int				is_walkable_for_routing(int x, int y, void *blob);
 int				is_valid_position(double x, double y, void *blob);
 void			update_position(t_engine *eng, t_keys *keys);
 void			update_rotation(t_player_rt *p, t_keys *keys);
@@ -99,6 +100,7 @@ void			mstr_chase_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 void			mstr_scan_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 void			mstr_reloc_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 void			mstr_alarm_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
+void			mstr_attack_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 void			execute_slr_transition(t_engine *eng, t_monster_rt *m, char *stim);
 void			execute_slr_transition_by_id(t_engine *eng, t_monster_rt *m, int sym_nbr);
 int				check_monster_self_collision(t_monster_rt *self, t_engine *eng);
@@ -127,5 +129,6 @@ void			draw_monster_stripe(t_engine *eng, int stripe, int *w_h,
 					t_sprite *s);
 void			draw_object_stripe(t_engine *eng, int stripe, int *w_h,
 					t_sprite *s);
+void			load_monster_anim(t_engine *eng);
 
 #endif

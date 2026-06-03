@@ -30,7 +30,7 @@ static void	push_neighbor(t_bfs_reach *b, int x, int y)
 
 	if (x < 0 || x >= b->size.i.x || y < 0 || y >= b->size.i.y)
 		return ;
-	if (!is_walkable(x, y, b->eng->blob))
+	if (!is_walkable_for_routing(x, y, b->eng->blob))
 		return ;
 	idx = y * b->size.i.x + x;
 	if (!b->visited[idx])

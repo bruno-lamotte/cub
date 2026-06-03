@@ -47,6 +47,7 @@ void	render_frame(t_engine *engine)
 	t_screen		*screen;
 	t_img			temp;
 
+	engine->pool.current_frame++;
 	screen = engine->screen;
 	sync_workers(&engine->pool);
 	temp = screen->img;

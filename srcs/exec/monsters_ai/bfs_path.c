@@ -7,7 +7,7 @@ static void	bfs_check_neighbor(t_bfs *b, int nx, int ny, int curr)
 
 	if (nx < 0 || nx >= b->width || ny < 0 || ny >= b->height)
 		return ;
-	if (!is_walkable(nx, ny, b->blob))
+	if (!is_walkable_for_routing(nx, ny, b->blob))
 		return ;
 	idx = ny * b->width + nx;
 	if (b->parent[idx] == -1)

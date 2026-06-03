@@ -54,19 +54,19 @@ int	is_bottleneck(int x, int y, void *blob)
 
 	w = get_map_width(get_blob_hdr(blob));
 	flags = get_map_flags(blob);
-	if (!is_walkable(x, y, blob))
+	if (!is_walkable_for_routing(x, y, blob))
 		return (0);
 	if (flags[y * w + x] & CELL_HAS_DOOR)
 		return (1);
-	if (!is_walkable(x - 1, y, blob)
-		&& !is_walkable(x + 1, y, blob)
-		&& is_walkable(x, y - 1, blob)
-		&& is_walkable(x, y + 1, blob))
+	if (!is_walkable_for_routing(x - 1, y, blob)
+		&& !is_walkable_for_routing(x + 1, y, blob)
+		&& is_walkable_for_routing(x, y - 1, blob)
+		&& is_walkable_for_routing(x, y + 1, blob))
 		return (1);
-	if (!is_walkable(x, y - 1, blob)
-		&& !is_walkable(x, y + 1, blob)
-		&& is_walkable(x - 1, y, blob)
-		&& is_walkable(x + 1, y, blob))
+	if (!is_walkable_for_routing(x, y - 1, blob)
+		&& !is_walkable_for_routing(x, y + 1, blob)
+		&& is_walkable_for_routing(x - 1, y, blob)
+		&& is_walkable_for_routing(x + 1, y, blob))
 		return (1);
 	return (0);
 }

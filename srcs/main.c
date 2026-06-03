@@ -59,6 +59,7 @@ int main(int ac, char **av)
 	}
 	init_thread_pool(engine);
 	init_static_lights(engine);
+	load_monster_anim(engine);
 
 	engine->slr = malloc(sizeof(t_slr1));
 	if (engine->slr)

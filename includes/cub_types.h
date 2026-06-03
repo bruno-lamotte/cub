@@ -24,7 +24,7 @@
 # define ACCEPTED 424242
 # define AUTO_ACTS_COUNT 10
 # define DIST_MAX 1024
-# define GAMMA 0.5f
+# define GAMMA 1.0f
 
 /* Définition stricte du type virgule fixe 16.16 */
 typedef int32_t t_fp;

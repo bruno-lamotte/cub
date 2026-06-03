@@ -3,7 +3,7 @@
 static int	is_player_in_light(t_player_rt *p, t_engine *eng)
 {
 	return (compute_light_at_point(p->pos.d.x, p->pos.d.y,
-			eng->blob, eng) > 0.05f);
+			eng->blob, eng) > 1.05f);
 }
 
 static int	is_player_in_external_light(t_player_rt *p, t_engine *eng)

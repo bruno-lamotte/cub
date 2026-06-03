@@ -337,6 +337,8 @@ typedef struct s_engine
 
 
 
+	t_img			mstr_frames[128];
+	int				mstr_frame_count;
 	// Variables FPS (pour supprimer les globales statiques)
 	struct timeval	fps_last;
 	int				fps_val;

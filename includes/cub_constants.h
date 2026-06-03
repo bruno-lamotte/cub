@@ -28,7 +28,7 @@
 # define MSTR_MELEE_DIST_SQ         0.81     /* (0.9 tiles) */
 # define MSTR_ATTACK_CHASE_DIST_SQ  1.44     /* (1.2 tiles) */
 
-# define PLAYER_DET_LIGHT_MAX_DIST_SQ 36.0f  /* (6 tiles) */
+# define PLAYER_DET_LIGHT_MAX_DIST_SQ 60.0f  /* (10 tiles) */
 # define PLAYER_DET_DARK_MAX_DIST_SQ  4.0f   /* (2 tiles) */
 # define PLAYER_DET_CLOSE_DIST_SQ   1.00f    /* (1 tile) */
 

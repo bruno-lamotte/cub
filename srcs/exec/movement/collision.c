@@ -31,6 +31,22 @@ int	is_walkable(int x, int y, void *blob)
 	return (1);
 }
 
+int	is_walkable_for_routing(int x, int y, void *blob)
+{
+	uint8_t		*flags;
+	int			w;
+	int			h;
+
+	w = get_map_width(get_blob_hdr(blob));
+	h = get_map_height(get_blob_hdr(blob));
+	flags = get_map_flags(blob);
+	if (x < 0 || x >= w || y < 0 || y >= h)
+		return (0);
+	if (flags[y * w + x] & CELL_HAS_WALL)
+		return (0);
+	return (1);
+}
+
 int	is_valid_position(double x, double y, void *blob)
 {
 	if (!is_walkable((int)(x - COLLISION_RADIUS), (int)(y - COLLISION_RADIUS),

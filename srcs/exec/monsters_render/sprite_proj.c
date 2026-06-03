@@ -32,19 +32,41 @@ static void	calc_object_projection(t_engine *eng, double trans[2], int w_h[5])
 		w_h[4] = eng->screen->win_height - 1;
 }
 
+#ifndef MONSTER_SCALE
+# define MONSTER_SCALE 1.8
+#endif
+
 static void	render_sprite(t_engine *eng, t_sprite *s, t_lut *lut)
 {
 	double	sp[2];
 	double	trans[2];
 	int		w_h[5];
 	int		stripe;
+	int		x_start;
+	int		x_end;
 
 	if (get_sprite_coords(eng, s->pos.d.x, s->pos.d.y, sp, trans) <= 0.1)
 		return ;
 	calc_object_projection(eng, trans, w_h);
 	s->shade = lut->shade_table[sh_idx(trans[1])];
-	stripe = w_h[1] - 1;
-	while (++stripe <= w_h[2])
+	if (s->is_monster)
+	{
+		int sprite_screen_x = (int)((eng->screen->win_width / 2) * (1.0 + trans[0] / trans[1]));
+		int scaled_width = (int)(w_h[0] * MONSTER_SCALE);
+		x_start = -scaled_width / 2 + sprite_screen_x;
+		x_end = scaled_width / 2 + sprite_screen_x;
+		if (x_start < 0)
+			x_start = 0;
+		if (x_end >= eng->screen->win_width)
+			x_end = eng->screen->win_width - 1;
+	}
+	else
+	{
+		x_start = w_h[1];
+		x_end = w_h[2];
+	}
+	stripe = x_start - 1;
+	while (++stripe <= x_end)
 	{
 		if (trans[1] < FP_TO_FLOAT(eng->z_buffer[stripe].perp_wall_dist))
 		{

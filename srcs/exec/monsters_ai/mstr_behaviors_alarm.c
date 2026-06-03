@@ -29,6 +29,8 @@ static void	bind_state_behavior(t_engine *eng, t_state *s)
 		bind_behavior_to_state(eng->slr, s->id, &mstr_reloc_behavior);
 	else if (fsm_state == MSTR_STATE_ALARM)
 		bind_behavior_to_state(eng->slr, s->id, &mstr_alarm_behavior);
+	else if (fsm_state == MSTR_STATE_ATTACK)
+		bind_behavior_to_state(eng->slr, s->id, &mstr_attack_behavior);
 }
 
 static void	resolve_alarm_sym_nbrs(t_slr1 *slr)
