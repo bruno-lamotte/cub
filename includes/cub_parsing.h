@@ -3,6 +3,8 @@
 
 # include "cub_types.h"
 
+bool	check_filename(char *filename);
+
 // get_map.c
 char	**get_file(char *filename);
 void	free_str_tab(char **tab);

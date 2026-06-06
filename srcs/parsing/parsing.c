@@ -6,7 +6,7 @@
 /*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 16:37:31 by rstarcev          #+#    #+#             */
-/*   Updated: 2026/05/28 16:51:19 by rstarcev         ###   ########.fr       */
+/*   Updated: 2026/06/05 10:26:07 by rstarcev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,17 +112,17 @@ bool	parse_file(char *filename, t_data *d)
 	p.data = d;
 	ft_bzero(&p.idx, sizeof(t_index));
 	if (!check_s("TEXTURES\n", check_texture_section, &p, 0))
-		return (free_str_tab(p.file_content), free(p.data), \
+		return (free_str_tab(p.file_content), \
 print_perr(&p.idx), false);
 	if (!sub_parse_file(&p))
 		return (free_str_tab(p.file_content), free_all_def(p.data), \
-free(p.data), print_perr(&p.idx), false);
+print_perr(&p.idx), false);
 	if (!get_ids(&p))
 		return (free_str_tab(p.file_content), free_ids(p.data), \
-free_all_def(p.data), free(p.data), print_perr(&p.idx), false);
+free_all_def(p.data), print_perr(&p.idx), false);
 	if (!validate_map(d, &p.idx))
 		return (free_str_tab(p.file_content), free_ids(p.data), \
-free_all_def(p.data), free(p.data), print_perr(&p.idx), false);
+free_all_def(p.data), print_perr(&p.idx), false);
 	p.data->door_rt_count = (uint16_t)count_doors_rt(p.data);
 	p.data->monster_rt_count = (uint16_t)count_monster_rt(p.data);
 	free_str_tab(p.file_content);

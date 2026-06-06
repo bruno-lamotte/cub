@@ -90,7 +90,12 @@ SRCS = \
 	srcs/exec/slr/table_init.c \
 	srcs/exec/slr/states_utils.c \
 	srcs/exec/slr/states_main.c \
-	srcs/exec/slr/print.c
+	srcs/exec/slr/print.c \
+	srcs/menu/menu.c \
+	srcs/menu/menu_render.c \
+	srcs/menu/menu_maps.c \
+	srcs/menu/menu_hooks.c \
+	srcs/menu/menu_background.c
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 

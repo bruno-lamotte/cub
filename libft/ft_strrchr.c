@@ -6,7 +6,7 @@
 /*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:32:35 by eretriha          #+#    #+#             */
-/*   Updated: 2025/11/09 18:29:59 by rstarcev         ###   ########.fr       */
+/*   Updated: 2026/06/05 07:33:32 by rstarcev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
  */
+
 char	*ft_strrchr(const char *s, int c)
 {
 	size_t	i;

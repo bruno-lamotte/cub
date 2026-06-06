@@ -1,6 +1,6 @@
 TEXTURES
 {
-	text_north	 : HEXA, 0xD62828
+	text_north	  HEXA, 0xD62828
 	text_west	 : HEXA, 0xBC6C25
 	text_south	 : HEXA, 0x8B4513
 	text_est	 : HEXA, 0xF4A261

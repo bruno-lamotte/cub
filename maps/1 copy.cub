@@ -12,6 +12,7 @@ TEXTURES
 	text_player	 : PATH, ./tex.xpm
 	monster_tex  : HEXA, 0x000fff
 	tree_tex	 : PATH, ./tex.xpm
+	exit_tex	 : HEXA, 0x000000
 }
 WALLS
 {
@@ -38,6 +39,8 @@ MONSTERS
 OBJECTS
 {
 	T : 50%, tree_tex
+	L : 50%, tree_tex, ON
+	X : 100%, exit_tex, OFF
 }
 PLAYERS
 {
@@ -48,8 +51,8 @@ PLAYERS
 }
 MANDATORY_MAP
 {
- 1M
-101111
- 1N101
-  1101
+               111
+1111111111111111L1
+1X00000000D000N001
+111111111111111111
 }

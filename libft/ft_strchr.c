@@ -6,7 +6,7 @@
 /*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:12:21 by eretriha          #+#    #+#             */
-/*   Updated: 2025/11/09 05:53:57 by rstarcev         ###   ########.fr       */
+/*   Updated: 2026/06/05 07:32:30 by rstarcev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ char	*ft_strchr(const char *s, int c)
 	}
 	return (NULL);
 }
+
 /* 
 #include <stdio.h>
 #include <string.h>

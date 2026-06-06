@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print_blob.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/05 18:45:51 by rstarcev          #+#    #+#             */
+/*   Updated: 2026/06/05 18:58:44 by rstarcev         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/cub.h"
 
 static void	print_sep_line(size_t width)
@@ -17,34 +29,29 @@ static void	print_sep_line(size_t width)
 static void	print_one_grid(const char *title, uint8_t *arr,
 	size_t width, size_t height)
 {
-	size_t	l;
-	size_t	c;
+	ssize_t	l;
+	ssize_t	c;
 	size_t	idx;
 
 	printf("\n%s\n", title);
 	print_sep_line(width);
-	l = 0;
-	while (l < height)
+	l = -1;
+	while (++l < height)
 	{
 		printf("%3zu |", l);
-		c = 0;
-		while (c < width)
+		c = -1;
+		while (++c < width)
 		{
 			idx = l * width + c;
 			printf(" %3u ", arr[idx]);
-			c++;
 		}
 		printf("|\n");
-		l++;
 	}
 	print_sep_line(width);
 	printf("      ");
-	c = 0;
-	while (c < width)
-	{
+	c = -1;
+	while (++c < width)
 		printf("%3zu  ", c);
-		c++;
-	}
 	printf("\n");
 }
 
@@ -65,34 +72,29 @@ static char	get_flag_char(uint8_t flags)
 
 void	print_map_flags_pretty(t_map_soa map, size_t width, size_t height)
 {
-	size_t	l;
-	size_t	c;
+	ssize_t	l;
+	ssize_t	c;
 	size_t	idx;
 
 	printf("\nFLAG VIEW\n");
 	print_sep_line(width);
-	l = 0;
-	while (l < height)
+	l = -1;
+	while (++l < height)
 	{
 		printf("%3zu |", l);
-		c = 0;
-		while (c < width)
+		c = -1;
+		while (++c < width)
 		{
 			idx = l * width + c;
 			printf(" %3c ", get_flag_char(map.flags[idx]));
-			c++;
 		}
 		printf("|\n");
-		l++;
 	}
 	print_sep_line(width);
-		printf("      ");
-	c = 0;
-	while (c < width)
-	{
+	printf("      ");
+	c = -1;
+	while (++c < width)
 		printf("%3zu  ", c);
-		c++;
-	}
 	printf("\n");
 }
 
@@ -104,7 +106,7 @@ void	print_map_soa(t_map_soa map, size_t width, size_t height)
 	print_one_grid("OCC_ID", map.occ_id, width, height);
 }
 
-void print_hdr_seg_map(t_blob_seg *map)
+void	print_hdr_seg_map(t_blob_seg *map)
 {
 	printf("start : %u\n", map->start);
 	printf("end   : %u\n", map->end);
@@ -113,7 +115,7 @@ void print_hdr_seg_map(t_blob_seg *map)
 	printf("height: %u\n", map->map_data.height);
 }
 
-void print_hdr_seg_normal(t_blob_seg *s)
+void	print_hdr_seg_normal(t_blob_seg *s)
 {
 	printf("start : %u\n", s->start);
 	printf("end   : %u\n", s->end);
@@ -121,57 +123,39 @@ void print_hdr_seg_normal(t_blob_seg *s)
 	printf("count : %u\n", s->count);
 }
 
-void print_hdr(t_blob_hdr *h)
+void	print_hdr(t_blob_hdr *h)
 {
-	printf("--------------------------\n");
-	printf("BLOB HEADER :\n");
-	printf("--------------------------\n");
-	printf("map:\n");
+	printf("-----\nBLOB HEADER :\n-----\nmap:\n");
 	print_hdr_seg_map(&h->map);
-	printf("--------------------------\n");
-	printf("door_rt:\n");
-	printf("sizeof struct -> %zd\n", sizeof(t_door_rt));
+	printf("-----\ndoor_rt:\nsizeof struct -> %zd\n", sizeof(t_door_rt));
 	print_hdr_seg_normal(&h->door_rt);
-	printf("--------------------------\n");
-	printf("mstr_rt:\n");
+	printf("-----\nmstr_rt:\n");
 	printf("sizeof struct -> %zd\n", sizeof(t_monster_rt));
 	print_hdr_seg_normal(&h->mstr_rt);
-	printf("--------------------------\n");
-	printf("wall_def:\n");
-	printf("sizeof struct -> %zd\n", sizeof(t_bdef_wall));
+	printf("-----\nwall_def:\nsizeof struct -> %zd\n", sizeof(t_bdef_wall));
 	print_hdr_seg_normal(&h->wall_def);
-	printf("--------------------------\n");
-	printf("air_def:\n");
-	printf("sizeof struct -> %zd\n", sizeof(t_bdef_air));
+	printf("-----\nair_def:\nsizeof struct -> %zd\n", sizeof(t_bdef_air));
 	print_hdr_seg_normal(&h->air_def);
-	printf("--------------------------\n");
-	printf("door_def:\n");
-	printf("sizeof struct -> %zd\n", sizeof(t_bdef_door));
+	printf("-----\ndoor_def:\nsizeof struct -> %zd\n", sizeof(t_bdef_door));
 	print_hdr_seg_normal(&h->door_def);
-	printf("--------------------------\n");
-	printf("mstr_def:\n");
+	printf("-----\nmstr_def:\n");
 	printf("sizeof struct -> %zd\n", sizeof(t_bdef_monster));
 	print_hdr_seg_normal(&h->mstr_def);
-	printf("--------------------------\n");
-	printf("obj_def:\n");
-	printf("sizeof struct -> %zd\n", sizeof(t_bdef_obj));
+	printf("-----\nobj_def:\n");
 	print_hdr_seg_normal(&h->obj_def);
-	printf("--------------------------\n");
-	printf("tex_def:\n");
-	printf("sizeof struct -> %zd\n", sizeof(t_bdef_tex));
+	printf("-----\ntex_def:\nsizeof struct -> %zd\n", sizeof(t_bdef_tex));
 	print_hdr_seg_normal(&h->tex_def);
-	printf("--------------------------\n");
-	printf("pixels_data:\n");
+	printf("-----\npixels_data:\n");
 	print_hdr_seg_normal(&h->pixels_data);
-	printf("--------------------------\n");
+	printf("-----\n");
 	printf("end offset = %u\n", h->end_offset);
-	printf("--------------------------\n");
+	printf("-----\n");
 }
 
-void print_one_door_rt(t_door_rt *d, size_t width)
+void	print_one_door_rt(t_door_rt *d, size_t width)
 {
-	size_t x;
-	size_t y;
+	size_t	x;
+	size_t	y;
 
 	x = d->map_id % width;
 	y = d->map_id / width;
@@ -181,12 +165,12 @@ void print_one_door_rt(t_door_rt *d, size_t width)
 	printf("-------\n");
 }
 
-void print_door_rt(void *blob)
+void	print_door_rt(void *blob)
 {
-	t_blob_hdr *hdr;
-	size_t width;
-	t_door_rt *d;
-	size_t i;
+	t_blob_hdr	*hdr;
+	size_t		width;
+	t_door_rt	*d;
+	size_t		i;
 
 	printf("\nDOOR RT :\n");
 	printf("-------\n");
@@ -201,10 +185,10 @@ void print_door_rt(void *blob)
 	}
 }
 
-void print_one_mstr_rt(t_monster_rt *d, size_t width)
+void	print_one_mstr_rt(t_monster_rt *d, size_t width)
 {
-	size_t x;
-	size_t y;
+	size_t	x;
+	size_t	y;
 
 	x = d->map_id % width;
 	y = d->map_id / width;
@@ -215,12 +199,12 @@ void print_one_mstr_rt(t_monster_rt *d, size_t width)
 	printf("-------\n");
 }
 
-void print_mstr_rt(void *blob)
+void	print_mstr_rt(void *blob)
 {
-	t_blob_hdr *hdr;
-	size_t width;
-	t_monster_rt *d;
-	size_t i;
+	t_blob_hdr		*hdr;
+	size_t			width;
+	t_monster_rt	*d;
+	size_t			i;
 
 	printf("\nMSTR RT :\n");
 	printf("-------\n");
@@ -404,6 +388,7 @@ void print_bdefs(void *blob)
 	print_bdef_door_arr(get_door_bdef(blob), h->door_def.count);
 	print_bdef_monster_arr(get_mstr_bdef(blob), h->mstr_def.count);
 	print_bdef_obj_arr(get_obj_bdef(blob), h->obj_def.count);
+	print_bdef_tex_arr(get_tex_bdef(blob), h->tex_def.count);
 }
 
 void print_blob(void *blob)

@@ -57,7 +57,8 @@ int				is_door_horiz(int mx, int my, int w, void *blob);
 int				check_door_hit(t_ray_data *ray, t_player_rt *p, void *blob);
 
 // srcs/exec/player.c
-t_player_rt		*init_player_rt(t_data *data);
+// t_player_rt		*init_player_rt(t_data *data);
+void	init_player_rt(t_data *data, t_player_rt *p);
 
 // srcs/exec/movement/
 int				is_walkable(int x, int y, void *blob);
@@ -73,8 +74,9 @@ void			update_doors(t_engine *engine);
 // srcs/exec/controls/
 int				key_press(int keycode, t_engine *engine);
 int				key_release(int keycode, t_engine *engine);
-int				close_window(t_engine *engine);
+int				close_window(t_engine *engine, int ret_val);
 int				game_loop(t_engine *engine);
+void			free_engine_graphics(t_engine *engine);
 void			update_global_alarm_state(t_engine *eng);
 void			init_terminal_mode(t_engine *eng);
 void			update_interaction(t_engine *eng);
