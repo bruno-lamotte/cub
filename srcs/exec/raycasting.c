@@ -119,9 +119,13 @@ static void	fill_ray_out(t_ray_data *out, t_dda_state *s, t_player_rt *p,
 {
 	double	dist;
 	double	wx;
+	int		w;
+	int		h;
 
-	if (get_map_flags(blob)[out->map_y * get_map_width(get_blob_hdr(blob))
-			+ out->map_x] & CELL_HAS_WALL)
+	w = get_map_width(get_blob_hdr(blob));
+	h = get_map_height(get_blob_hdr(blob));
+	if (out->map_x >= 0 && out->map_x < w && out->map_y >= 0 && out->map_y < h
+		&& (get_map_flags(blob)[out->map_y * w + out->map_x] & CELL_HAS_WALL))
 	{
 		dist = get_dda_dist(s);
 		if (s->side == 0)

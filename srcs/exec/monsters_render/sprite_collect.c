@@ -1,27 +1,27 @@
 #include "cub.h"
 #include <math.h>
 
-double	get_sprite_coords(t_engine *eng, double sx, double sy,
-					double sp[2], double trans[2])
+double	get_sprite_coords(t_engine *eng, t_vec2 pos,
+			t_vec2 *sp, t_vec2 *trans)
 {
 	double	det;
 
-	sp[0] = sx - eng->player->pos.d.x;
-	sp[1] = sy - eng->player->pos.d.y;
+	sp->d.x = pos.d.x - eng->player->pos.d.x;
+	sp->d.y = pos.d.y - eng->player->pos.d.y;
 	det = 1.0 / (eng->player->plane.d.x * eng->player->dir.d.y
 			- eng->player->dir.d.x * eng->player->plane.d.y);
-	trans[0] = det * (eng->player->dir.d.y * sp[0]
-			- eng->player->dir.d.x * sp[1]);
-	trans[1] = det * (-eng->player->plane.d.y * sp[0]
-			+ eng->player->plane.d.x * sp[1]);
-	return (trans[1]);
+	trans->d.x = det * (eng->player->dir.d.y * sp->d.x
+			- eng->player->dir.d.x * sp->d.y);
+	trans->d.y = det * (-eng->player->plane.d.y * sp->d.x
+			+ eng->player->plane.d.x * sp->d.y);
+	return (trans->d.y);
 }
 
 int	collect_monsters(t_engine *eng, t_sprite *sprites, int count)
 {
 	t_monster_rt	*m;
-	double			sp[2];
-	double			trans[2];
+	t_vec2			sp;
+	t_vec2			trans;
 	int				i;
 
 	m = get_monster_rt(eng->blob);
@@ -30,10 +30,9 @@ int	collect_monsters(t_engine *eng, t_sprite *sprites, int count)
 	{
 		if (!(m[i].flags & MONSTER_DEAD) && count < 512)
 		{
-			sprites[count].pos.d.x = m[i].pos.d.x;
-			sprites[count].pos.d.y = m[i].pos.d.y;
-			sprites[count].dist = get_sprite_coords(eng, m[i].pos.d.x,
-					m[i].pos.d.y, sp, trans);
+			sprites[count].pos = m[i].pos;
+			sprites[count].dist = get_sprite_coords(eng, m[i].pos,
+					&sp, &trans);
 			sprites[count].is_monster = 1;
 			sprites[count].m_idx = i;
 			count++;
@@ -43,25 +42,24 @@ int	collect_monsters(t_engine *eng, t_sprite *sprites, int count)
 }
 
 int	fill_obj_sprite(t_engine *eng, t_sprite *sprites, int count,
-				int x, int y)
+		t_vec2 grid)
 {
-	double	sp[2];
-	double	trans[2];
+	t_vec2	sp;
+	t_vec2	trans;
+	t_vec2	pos;
 	char	sym;
 	int		idx;
 
-	idx = get_map_occ_ids(eng->blob)[y
-		* get_map_width(get_blob_hdr(eng->blob)) + x];
+	idx = get_map_occ_ids(eng->blob)[grid.i.y
+		* get_map_width(get_blob_hdr(eng->blob)) + grid.i.x];
 	sym = eng->data->obj_defs[idx].symbol;
-	if (sym == 'L')
-		return (count);
-	sprites[count].pos.d.x = x + 0.5;
-	sprites[count].pos.d.y = y + 0.5;
-	sprites[count].dist = get_sprite_coords(eng, x + 0.5, y + 0.5, sp, trans);
+	pos.d.x = grid.i.x + 0.5;
+	pos.d.y = grid.i.y + 0.5;
+	sprites[count].pos = pos;
+	sprites[count].dist = get_sprite_coords(eng, pos, &sp, &trans);
 	sprites[count].is_monster = 0;
 	sprites[count].sym = sym;
-	sprites[count].grid.i.x = x;
-	sprites[count].grid.i.y = y;
+	sprites[count].grid = grid;
 	return (count + 1);
 }
 
@@ -69,21 +67,20 @@ int	collect_objects(t_engine *eng, t_sprite *sprites, int count)
 {
 	int		w;
 	int		h;
-	int		x;
-	int		y;
+	t_vec2	grid;
 
 	w = get_map_width(get_blob_hdr(eng->blob));
 	h = get_map_height(get_blob_hdr(eng->blob));
-	y = -1;
-	while (++y < h)
+	grid.i.y = -1;
+	while (++grid.i.y < h)
 	{
-		x = -1;
-		while (++x < w)
+		grid.i.x = -1;
+		while (++grid.i.x < w)
 		{
-			if ((get_map_flags(eng->blob)[y * w + x] & CELL_HAS_OBJ)
-				&& count < 512)
+			if ((get_map_flags(eng->blob)[grid.i.y * w + grid.i.x]
+				& CELL_HAS_OBJ) && count < 512)
 			{
-				count = fill_obj_sprite(eng, sprites, count, x, y);
+				count = fill_obj_sprite(eng, sprites, count, grid);
 			}
 		}
 	}

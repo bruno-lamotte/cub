@@ -19,7 +19,17 @@ SRCS = \
 	srcs/parsing/check_id.c \
 	srcs/parsing/get_tex.c \
 	srcs/parsing/validate_map.c \
-	srcs/parsing/solver.c \
+	srcs/parsing/solver/solver_checkpoint.c \
+	srcs/parsing/solver/solver_utils.c \
+	srcs/parsing/solver/solver_bfs_path.c \
+	srcs/parsing/solver/solver_simulation.c \
+	srcs/parsing/solver/solver_movement.c \
+	srcs/parsing/solver/solver_state.c \
+	srcs/parsing/solver/solver_visited.c \
+	srcs/parsing/solver/solver_queue.c \
+	srcs/parsing/solver/solver_targets.c \
+	srcs/parsing/solver/solver_branching.c \
+	srcs/parsing/solver/solver_search.c \
 	srcs/parsing/init_mlx.c \
 	srcs/parsing/print_tex_lib.c \
 	srcs/blob/build_blob.c \
@@ -44,12 +54,14 @@ SRCS = \
 	srcs/exec/render/hacking_overlay.c \
 	srcs/exec/render/hacking_terminal.c \
 	srcs/exec/render/render_main.c \
+	srcs/exec/render/hud.c \
 	srcs/exec/raycasting.c \
 	srcs/exec/draw_column.c \
 	srcs/exec/draw_pixels.c \
 	srcs/exec/draw_floor.c \
 	srcs/exec/draw_floor_utils.c \
 	srcs/exec/exec_utils.c \
+	srcs/exec/exit.c \
 	srcs/exec/light_sources/light_init.c \
 	srcs/exec/light_sources/light_los.c \
 	srcs/exec/light_sources/light_compute.c \
@@ -58,6 +70,11 @@ SRCS = \
 	srcs/exec/minimap_entities.c \
 	srcs/exec/monsters_render/sprite_collect.c \
 	srcs/exec/monsters_render/sprite_proj.c \
+	srcs/exec/monsters_render/sprite_proj_utils.c \
+	srcs/exec/monsters_render/dxpm_loader.c \
+	srcs/exec/monsters_render/dxpm_parser.c \
+	srcs/exec/monsters_render/sprite_anim_loader.c \
+	srcs/exec/monsters_render/sprite_object_draw.c \
 	srcs/exec/monsters_render/sprite_draw.c \
 	srcs/exec/monsters_ai/player_detection.c \
 	srcs/exec/monsters_ai/collision.c \
@@ -94,6 +111,10 @@ SRCS = \
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
+SOLVER_NAME = solver
+SOLVER_SRCS = $(filter-out srcs/main.c, $(SRCS)) srcs/parsing/solver/solver_main.c
+SOLVER_OBJS = $(SOLVER_SRCS:%.c=$(OBJ_DIR)/%.o)
+
 LIBFT_DIR = libft
 LIBFT_LIB = $(LIBFT_DIR)/libft.a
 
@@ -103,10 +124,13 @@ MLX = $(MLX_DIR)/libmlx.a
 INCLUDES = -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(MLX_DIR)
 MLX_FLAGS = -L$(MLX_DIR) -lmlx -lXext -lX11 -lm -lz
 
-all: $(MLX) $(LIBFT_LIB) $(NAME)
+all: $(MLX) $(LIBFT_LIB) $(NAME) $(SOLVER_NAME)
 
 $(NAME): $(OBJS) $(LIBFT_LIB) $(MLX)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT_LIB) $(MLX_FLAGS) -o $(NAME)
+
+$(SOLVER_NAME): $(SOLVER_OBJS) $(LIBFT_LIB) $(MLX)
+	$(CC) $(CFLAGS) $(SOLVER_OBJS) $(LIBFT_LIB) $(MLX_FLAGS) -o $(SOLVER_NAME)
 
 $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
@@ -125,7 +149,7 @@ clean:
 	$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(SOLVER_NAME)
 	$(MAKE) -C $(LIBFT_DIR) fclean
 	$(MAKE) -C $(MLX_DIR) -f Makefile.gen clean || true
 

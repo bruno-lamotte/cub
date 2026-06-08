@@ -36,7 +36,11 @@ bool	get_one_xpm(void *mlx, char *path, t_img *img)
 	img->addr = \
 mlx_get_data_addr(img->img_ptr, &img->bpp, &img->line_len, &img->endian);
 	if (!img->addr || img->bpp != 32)
-		return (mlx_destroy_image(mlx, img->img_ptr), false);
+	{
+		mlx_destroy_image(mlx, img->img_ptr);
+		img->img_ptr = NULL;
+		return (false);
+	}
 	return (true);
 }
 

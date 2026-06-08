@@ -26,7 +26,7 @@ typedef struct	s_player_rt
 	t_vec2		pos;
 	t_vec2		dir;
 	t_vec2		plane;
-	uint8_t		tex_id;
+	int			hp;
 }				t_player_rt;
 
 typedef struct	s_blob_seg
@@ -316,6 +316,25 @@ typedef struct s_interact_obj
 	t_vec2	pos;
 }				t_interact_obj;
 
+typedef enum e_mstr_anim_type
+{
+	MSTR_ANIM_COURSE = 0,
+	MSTR_ANIM_PUNCH,
+	MSTR_ANIM_FACE,
+	MSTR_ANIM_18FACE,
+	MSTR_ANIM_PROFIL,
+	MSTR_ANIM_18DOS,
+	MSTR_ANIM_DOS,
+	MSTR_ANIM_COUNT
+}	t_mstr_anim_type;
+
+typedef struct s_mstr_anim
+{
+	t_img			frames[64];
+	int				frame_count;
+	t_vec2			offset;
+}	t_mstr_anim;
+
 typedef struct s_engine
 {
 	t_screen		*screen;
@@ -336,11 +355,13 @@ typedef struct s_engine
 	int				selected_obj_idx;
 	t_interact_obj	interact_objs[64];
 	int				interact_obj_count;
+	int				is_solver;
 
 
 
-	t_img			mstr_frames[128];
-	int				mstr_frame_count;
+	t_mstr_anim		anims[MSTR_ANIM_COUNT];
+	t_img			lamp_tex;
+	t_img			terminal_tex;
 	// Variables FPS (pour supprimer les globales statiques)
 	struct timeval	fps_last;
 	int				fps_val;

@@ -35,5 +35,6 @@ t_player_rt	*init_player_rt(t_data *data)
 	p->pos.d.x = data->player_col + 0.5;
 	p->pos.d.y = data->player_row + 0.5;
 	set_player_dir(p, data->player_dir);
+	p->hp = PLAYER_MAX_HP;
 	return (p);
 }

@@ -53,7 +53,7 @@ void	run_grammar_transitions(t_monster_rt *m, t_engine *eng,
 		chase_transitions(m, eng, d2, spotted);
 	else if (m->state == MSTR_STATE_ATTACK)
 	{
-		if (d2 > MSTR_ATTACK_CHASE_DIST_SQ || m->alert_timer > 30)
+		if (d2 > MSTR_ATTACK_CHASE_DIST_SQ || m->alert_timer > MSTR_ATTACK_DURATION)
 			execute_slr_transition(eng, m, "ACT_CHASE_MOVE");
 	}
 	else if (m->state == MSTR_STATE_SCAN)

@@ -7,14 +7,6 @@ typedef union u_conv
 	int32_t		i;
 }	t_conv;
 
-void	rotate_vec_fp(t_vec2 *v, t_fp fp_cos, t_fp fp_sin)
-{
-	t_fp	old_x;
-
-	old_x = v->fp.x;
-	v->fp.x = FP_MUL(old_x, fp_cos) - FP_MUL(v->fp.y, fp_sin);
-	v->fp.y = FP_MUL(old_x, fp_sin) + FP_MUL(v->fp.y, fp_cos);
-}
 
 float	fast_inv_sqrt(float number)
 {

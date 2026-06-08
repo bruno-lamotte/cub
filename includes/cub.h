@@ -7,5 +7,6 @@
 # include "cub_blob.h"
 # include "cub_slr.h"
 # include "cub_exec.h"
+# include "cub_solver.h"
 
 #endif

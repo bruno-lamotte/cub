@@ -42,7 +42,6 @@ bool	check_bonus_map_section(t_parsing *p, size_t len);
 bool	check_s(char *n, bool (*f)(t_parsing *, size_t), t_parsing *p, size_t l);
 
 bool	validate_map(t_data *d, t_index *i);
-bool	is_map_solvable(t_data *d);
 
 // check IDS
 bool	get_ids(t_parsing *p);
@@ -73,6 +72,7 @@ bool	init_mlx(t_screen *screen, char *title);
 void	free_img_tab(void *mlx, t_img *img, size_t lim);
 bool	get_all_tex(t_data *data, t_screen *s);
 void	draw_tex_lib(t_screen *s, t_data *d, int i);
+bool	get_one_xpm(void *mlx, char *path, t_img *img);
 
 typedef struct	s_tmp_map_data
 {

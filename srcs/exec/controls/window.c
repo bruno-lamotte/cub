@@ -5,6 +5,10 @@
 
 static void	free_engine_graphics(t_engine *engine)
 {
+	if (engine->screen && engine->lamp_tex.img_ptr)
+		mlx_destroy_image(engine->screen->mlx_ptr, engine->lamp_tex.img_ptr);
+	if (engine->screen && engine->terminal_tex.img_ptr)
+		mlx_destroy_image(engine->screen->mlx_ptr, engine->terminal_tex.img_ptr);
 	if (engine->screen && engine->data)
 		free_img_tab(engine->screen->mlx_ptr, engine->data->img_tab,
 			engine->data->textures_len);
@@ -36,6 +40,20 @@ int	close_window(t_engine *engine)
 	return (0);
 }
 
+static void	check_game_status(t_engine *engine)
+{
+	if (is_player_on_exit(engine))
+	{
+		printf("Victory! You reached the exit!\n");
+		close_window(engine);
+	}
+	if (engine->player->hp <= 0)
+	{
+		printf("Game Over! You were defeated by a monster.\n");
+		close_window(engine);
+	}
+}
+
 int	game_loop(t_engine *engine)
 {
 	struct timeval	start;
@@ -51,6 +69,7 @@ int	game_loop(t_engine *engine)
 		update_position(engine, &engine->keys);
 		update_rotation(engine->player, &engine->keys);
 	}
+	check_game_status(engine);
 	render_frame(engine);
 	gettimeofday(&end, NULL);
 	elapsed = (end.tv_sec - start.tv_sec) * 1000000L

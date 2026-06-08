@@ -40,8 +40,8 @@ void	mstr_move_towards(t_monster_rt *m, t_engine *eng,
 		m->dir.d.x = d.d.x * fast_inv_sqrt(len2);
 		m->dir.d.y = d.d.y * fast_inv_sqrt(len2);
 	}
-	d.d.x = m->pos.d.x + m->dir.d.x * 0.035;
-	d.d.y = m->pos.d.y + m->dir.d.y * 0.035;
+	d.d.x = m->pos.d.x + m->dir.d.x * MSTR_PATROL_SPEED;
+	d.d.y = m->pos.d.y + m->dir.d.y * MSTR_PATROL_SPEED;
 	if (is_valid_position(d.d.x, m->pos.d.y, eng->blob)
 		&& check_monster_collision(d.d.x, m->pos.d.y, self_idx, eng))
 		m->pos.d.x = d.d.x;
