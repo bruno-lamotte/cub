@@ -64,6 +64,7 @@ SRCS = \
 	srcs/exec/exit.c \
 	srcs/exec/light_sources/light_init.c \
 	srcs/exec/light_sources/light_los.c \
+	srcs/exec/light_sources/light_los_utils.c \
 	srcs/exec/light_sources/light_compute.c \
 	srcs/exec/minimap/minimap_draw.c \
 	srcs/exec/minimap/minimap_utils.c \

@@ -84,7 +84,7 @@ void	calc_monster_bounds(t_engine *eng, t_sprite *s,
 	}
 	scale = (params.i.y * MONSTER_SCALE) / MSTR_ORIG_WIDTH;
 	if (anim_type == MSTR_ANIM_PUNCH)
-		scale *= 0.5;
+		scale *= 0.7;
 	bounds[0] = params.i.x + anim->offset.i.x * scale
 		- (anim->frames[0].width * scale) / 2.0;
 	bounds[1] = bounds[0] + anim->frames[0].width * scale;

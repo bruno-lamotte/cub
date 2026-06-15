@@ -89,6 +89,9 @@ void			update_interaction(t_engine *eng);
 // srcs/exec/light_sources/
 void			init_static_lights(t_engine *engine);
 int				check_los(t_vec2 p1, t_vec2 p2, void *blob);
+int				check_thick_los(t_vec2 p1, t_vec2 p2, double radius, void *blob);
+int				check_los_shadow(float mx, float my, float px, float py);
+int				run_dda(int step[4], float d[4], float side[2], t_map_data *map);
 float			compute_light_at_point(double wx, double wy, void *blob, t_engine *eng);
 float			get_alarm_light_at_point(double wx, double wy, void *blob, t_engine *eng);
 
@@ -110,7 +113,7 @@ t_vec2			find_next_step(t_monster_rt *m, t_engine *eng, t_vec2 target, t_worker 
 void			mstr_move_towards(t_monster_rt *m, t_engine *eng,
 					t_vec2 target);
 void			mstr_go_to_guard(t_monster_rt *m, t_engine *eng, t_worker *w);
-void			mstr_chase(t_monster_rt *m, t_engine *eng);
+void			mstr_chase(t_monster_rt *m, t_engine *eng, t_worker *w);
 int				get_fsm_state_from_slr_state(t_engine *eng, int slr_state_id);
 void			mstr_patrol_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 void			mstr_chase_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);

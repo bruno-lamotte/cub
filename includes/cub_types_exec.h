@@ -76,6 +76,7 @@ typedef struct	s_map_soa
 	uint8_t		*occ_id;
 }				t_map_soa;
 
+
 # define MONSTER_MOVE			(1u << 0)
 # define MONSTER_ATTACK			(1u << 1)
 # define MONSTER_DEAD			(1u << 2)
@@ -121,6 +122,17 @@ typedef struct	s_door_rt
 	uint8_t		pad;
 	uint32_t	map_id;
 }				t_door_rt;
+
+typedef struct s_map_data
+{
+	uint8_t		*flags;
+	t_door_rt	*doors;
+	int			w;
+	int			h;
+	uint32_t	door_count;
+	int			target_x;
+	int			target_y;
+}	t_map_data;
 
 typedef struct	s_bdef_wall
 {
@@ -362,7 +374,6 @@ typedef struct s_engine
 	t_mstr_anim		anims[MSTR_ANIM_COUNT];
 	t_img			lamp_tex;
 	t_img			terminal_tex;
-	// Variables FPS (pour supprimer les globales statiques)
 	struct timeval	fps_last;
 	int				fps_val;
 	int				fps_frames;

@@ -9,10 +9,9 @@ void	mstr_patrol_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 
 void	mstr_chase_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 {
-	(void)w;
 	if (!detect_player(m, eng))
 		m->alert_timer++;
-	mstr_chase(m, eng);
+	mstr_chase(m, eng, w);
 }
 
 void	mstr_scan_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
@@ -36,7 +35,6 @@ void	mstr_reloc_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 
 void	mstr_attack_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 {
-	(void)w;
 	m->alert_timer++;
 	if (m->alert_timer == MSTR_ATTACK_DAMAGE_FRAME)
 	{
@@ -44,5 +42,5 @@ void	mstr_attack_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 		if (!eng->is_solver)
 			printf("Player attacked! HP remaining: %d/%d\n", eng->player->hp, PLAYER_MAX_HP);
 	}
-	mstr_chase(m, eng);
+	mstr_chase(m, eng, w);
 }
