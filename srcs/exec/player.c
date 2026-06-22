@@ -25,16 +25,24 @@ static void	set_player_dir(t_player_rt *p, t_dir dir)
 	}
 }
 
-t_player_rt	*init_player_rt(t_data *data)
+void	init_player_rt(t_data *data, t_player_rt *p)
 {
-	t_player_rt	*p;
-
-	p = ft_calloc(1, sizeof(t_player_rt));
-	if (!p)
-		return (NULL);
 	p->pos.d.x = data->player_col + 0.5;
 	p->pos.d.y = data->player_row + 0.5;
 	set_player_dir(p, data->player_dir);
 	p->hp = PLAYER_MAX_HP;
-	return (p);
 }
+
+// t_player_rt	*init_player_rt(t_data *data)
+// {
+// 	t_player_rt	*p;
+
+// 	p = ft_calloc(1, sizeof(t_player_rt));
+// 	if (!p)
+// 		return (NULL);
+// 	p->pos.d.x = data->player_col + 0.5;
+// 	p->pos.d.y = data->player_row + 0.5;
+// 	set_player_dir(p, data->player_dir);
+// 	p->hp = PLAYER_MAX_HP;
+// 	return (p);
+// }

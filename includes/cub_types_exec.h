@@ -347,6 +347,11 @@ typedef struct s_mstr_anim
 	t_vec2			offset;
 }	t_mstr_anim;
 
+// ret values
+#define CUB_EXIT_ERROR 1
+#define CUB_EXIT_QUIT 0
+#define CUB_EXIT_MENU 2
+
 typedef struct s_engine
 {
 	t_screen		*screen;
@@ -378,7 +383,17 @@ typedef struct s_engine
 	int				fps_val;
 	int				fps_frames;
 	long			fps_time_acc;
+	int				ret_val;
 }   t_engine;
+
+typedef struct s_Aengine
+{
+	t_screen		screen;
+	void			*blob;
+	t_player_rt	player;
+	t_data		data;
+	t_slr1		slr;
+}			t_Aengine;
 
 typedef struct s_bfs
 {

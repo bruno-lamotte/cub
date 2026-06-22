@@ -60,7 +60,8 @@ static int	init_solver_engine(t_data *d, t_engine *eng)
 	eng->is_solver = 1;
 	eng->data = d;
 	init_dummy_textures(d);
-	eng->player = init_player_rt(d);
+	// eng->player = init_player_rt(d);
+	init_player_rt(d, eng->player);
 	if (!eng->player)
 		return (0);
 	if (!build_blob(d, &eng->blob))

@@ -10,7 +10,9 @@
 # include <math.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <dirent.h>
 # include <X11/keysym.h>
+# include <X11/X.h>
 # include "../mlx/mlx.h"
 # include "../libft/libft.h"
 

@@ -6,7 +6,7 @@ int	main(int ac, char **av)
 {
 	t_data	*data;
 	int		res;
-
+	
 	if (ac != 2)
 	{
 		printf("Usage: ./solver <map_path.cub>\n");

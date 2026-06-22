@@ -3,6 +3,9 @@
 
 # include "cub_types.h"
 
+
+bool	check_filename(char *filename);
+
 // get_map.c
 char	**get_file(char *filename);
 void	free_str_tab(char **tab);
@@ -73,6 +76,12 @@ void	free_img_tab(void *mlx, t_img *img, size_t lim);
 bool	get_all_tex(t_data *data, t_screen *s);
 void	draw_tex_lib(t_screen *s, t_data *d, int i);
 bool	get_one_xpm(void *mlx, char *path, t_img *img);
+
+// main_helpers
+bool	build_engine(char *map_name, t_Aengine *a, t_engine *e);
+bool	build_abstract_engine(t_Aengine *e, char *map_name);
+int	cub(char *map);
+int	cub_menu(void);
 
 typedef struct	s_tmp_map_data
 {

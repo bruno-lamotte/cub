@@ -2,7 +2,8 @@ NAME = cub
 
 CC = cc
 MAKEFLAGS += -j16
-CFLAGS = -O3 -ffast-math -g -Wall -Wextra -lpthread -flto
+CFLAGS = -O0 -g -Wall -Wextra -lpthread
+# flto -ffast-math
 RM = rm -rf
 
 OBJ_DIR = objects
@@ -10,6 +11,7 @@ INCLUDES_DIR = includes
 
 SRCS = \
 	srcs/main.c \
+	srcs/main_helpers.c \
 	srcs/parsing/parsing.c \
 	srcs/parsing/get_file.c \
 	srcs/parsing/free_def.c \
@@ -108,7 +110,12 @@ SRCS = \
 	srcs/exec/slr/table_init.c \
 	srcs/exec/slr/states_utils.c \
 	srcs/exec/slr/states_main.c \
-	srcs/exec/slr/print.c
+	srcs/exec/slr/print.c \
+	srcs/menu/menu.c \
+	srcs/menu/menu_render.c \
+	srcs/menu/menu_maps.c \
+	srcs/menu/menu_hooks.c \
+	srcs/menu/menu_background.c
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 

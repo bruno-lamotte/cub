@@ -80,5 +80,4 @@ void    free_all(t_slr1 *data, int **table)
 	free_states(data->states);
 	if (data->state_behaviors)
 		free(data->state_behaviors);
-	free(data);
 }

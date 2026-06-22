@@ -23,7 +23,7 @@ int	key_press(int keycode, t_engine *engine)
 	else if (keycode == 'e' || keycode == 'E')
 		engine->keys.e = true;
 	else if (keycode == XK_Escape)
-		close_window(engine);
+		close_window(engine, CUB_EXIT_MENU);
 	return (0);
 }
 
