@@ -32,6 +32,7 @@ SRCS = \
 	srcs/exec/controls/keyboard.c \
 	srcs/exec/controls/terminal.c \
 	srcs/exec/controls/interaction.c \
+	srcs/exec/controls/mouse.c \
 	srcs/exec/doors.c \
 	srcs/exec/player.c \
 	srcs/exec/movement/player_move.c \

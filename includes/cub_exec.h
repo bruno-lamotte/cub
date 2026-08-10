@@ -80,6 +80,7 @@ void			update_doors(t_engine *engine);
 // srcs/exec/controls/
 int				key_press(int keycode, t_engine *engine);
 int				key_release(int keycode, t_engine *engine);
+int				mouse_move(int x, int y, t_engine *engine);
 void			free_engine_graphics(t_engine *engine);
 int				close_window(t_engine *engine, int ret_val);
 int				game_loop(t_engine *engine);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 00:12:30 by rstarcev          #+#    #+#             */
-/*   Updated: 2026/06/06 21:59:32 by rstarcev         ###   ########.fr       */
+/*   Updated: 2026/06/23 09:42:00 by blamotte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ int	cub(char *map)
 	print_blob(e.blob);
 	mlx_hook(e.screen->win_ptr, 2, 1L << 0, (void *)key_press, &e);
 	mlx_hook(e.screen->win_ptr, 3, 1L << 1, (void *)key_release, &e);
+	mlx_hook(e.screen->win_ptr, 6, 1L << 6, (void *)mouse_move, &e);
 	mlx_hook(e.screen->win_ptr, 17, 0L, (void *)close_window, &e);
 	mlx_loop_hook(e.screen->mlx_ptr, (void *)game_loop, &e);
 	mlx_loop(e.screen->mlx_ptr);
@@ -121,8 +122,3 @@ int	main(int ac, char **av)
 	else
 		return (cub(av[1]));
 }
-
-// int main(void)
-// {
-// 	return (cub("./maps/1.cub"));
-// }
