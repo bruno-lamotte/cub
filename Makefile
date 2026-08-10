@@ -143,10 +143,7 @@ fclean: clean
 
 re: fclean all
 
-debug: $(NAME)
-	gdb -x debug.gdb ./$(NAME)
-
 norminette:
 	norminette $(INCLUDES_DIR) srcs
 
-.PHONY: all clean fclean re debug norminette
+.PHONY: all clean fclean re norminette
