@@ -1,28 +1,26 @@
 #include "cub.h"
 
-int	check_monster_collision(double x, double y, int self_idx,
-				t_engine *eng)
+int	check_monster_collision(double x, double y, int self_idx, t_engine *eng)
 {
 	t_monster_rt	*mstr;
 	int				i;
-	double			dist2;
+	double			d2;
 
-	dist2 = (x - eng->player->pos.d.x) * (x - eng->player->pos.d.x)
+	d2 = (x - eng->player->pos.d.x) * (x - eng->player->pos.d.x)
 		+ (y - eng->player->pos.d.y) * (y - eng->player->pos.d.y);
-	if (dist2 < MSTR_COLLISION_DIST_SQ)
+	if (d2 < MSTR_COLLISION_DIST_SQ)
 		return (0);
 	mstr = get_monster_rt(eng->blob);
 	i = -1;
 	while (++i < eng->data->monster_rt_count)
 	{
-		if (i == self_idx)
-			continue ;
-		if (mstr[i].flags & MONSTER_DEAD)
-			continue ;
-		dist2 = (x - mstr[i].pos.d.x) * (x - mstr[i].pos.d.x)
-			+ (y - mstr[i].pos.d.y) * (y - mstr[i].pos.d.y);
-		if (dist2 < MSTR_COLLISION_DIST_SQ)
-			return (0);
+		if (i != self_idx && !(mstr[i].flags & MONSTER_DEAD))
+		{
+			d2 = (x - mstr[i].pos.d.x) * (x - mstr[i].pos.d.x)
+				+ (y - mstr[i].pos.d.y) * (y - mstr[i].pos.d.y);
+			if (d2 < MSTR_COLLISION_DIST_SQ)
+				return (0);
+		}
 	}
 	return (1);
 }

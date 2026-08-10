@@ -26,7 +26,7 @@ typedef struct	s_player_rt
 	t_vec2		pos;
 	t_vec2		dir;
 	t_vec2		plane;
-	uint8_t		tex_id;
+	int			hp;
 }				t_player_rt;
 
 typedef struct	s_blob_seg
@@ -76,6 +76,7 @@ typedef struct	s_map_soa
 	uint8_t		*occ_id;
 }				t_map_soa;
 
+
 # define MONSTER_MOVE			(1u << 0)
 # define MONSTER_ATTACK			(1u << 1)
 # define MONSTER_DEAD			(1u << 2)
@@ -121,6 +122,17 @@ typedef struct	s_door_rt
 	uint8_t		pad;
 	uint32_t	map_id;
 }				t_door_rt;
+
+typedef struct s_map_data
+{
+	uint8_t		*flags;
+	t_door_rt	*doors;
+	int			w;
+	int			h;
+	uint32_t	door_count;
+	int			target_x;
+	int			target_y;
+}	t_map_data;
 
 typedef struct	s_bdef_wall
 {
@@ -316,6 +328,25 @@ typedef struct s_interact_obj
 	t_vec2	pos;
 }				t_interact_obj;
 
+typedef enum e_mstr_anim_type
+{
+	MSTR_ANIM_COURSE = 0,
+	MSTR_ANIM_PUNCH,
+	MSTR_ANIM_FACE,
+	MSTR_ANIM_18FACE,
+	MSTR_ANIM_PROFIL,
+	MSTR_ANIM_18DOS,
+	MSTR_ANIM_DOS,
+	MSTR_ANIM_COUNT
+}	t_mstr_anim_type;
+
+typedef struct s_mstr_anim
+{
+	t_img			frames[64];
+	int				frame_count;
+	t_vec2			offset;
+}	t_mstr_anim;
+
 // ret values
 #define CUB_EXIT_ERROR 1
 #define CUB_EXIT_QUIT 0
@@ -341,12 +372,11 @@ typedef struct s_engine
 	int				selected_obj_idx;
 	t_interact_obj	interact_objs[64];
 	int				interact_obj_count;
+	int				is_solver;
 
-
-
-	t_img			mstr_frames[128];
-	int				mstr_frame_count;
-	// Variables FPS (pour supprimer les globales statiques)
+	t_mstr_anim		anims[MSTR_ANIM_COUNT];
+	t_img			lamp_tex;
+	t_img			terminal_tex;
 	struct timeval	fps_last;
 	int				fps_val;
 	int				fps_frames;
@@ -358,9 +388,9 @@ typedef struct s_Aengine
 {
 	t_screen		screen;
 	void			*blob;
-	t_player_rt	player;
-	t_data		data;
-	t_slr1		slr;
+	t_player_rt		player;
+	t_data			data;
+	t_slr1			slr;
 }			t_Aengine;
 
 typedef struct s_bfs

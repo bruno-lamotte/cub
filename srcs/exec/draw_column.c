@@ -55,7 +55,8 @@ void	init_projection(t_draw *d, t_ray_data *ray, int win_height)
 static void	set_tex_mapping(t_draw *d, t_ray_data *ray, t_vec2 *dir,
 				void *blob, int win_height)
 {
-	d->pixels = (uint32_t *)((uint8_t *)blob + d->tex.offset);
+	d->pixels = (uint32_t *)((uint8_t *)blob
+			+ ((t_blob_hdr *)blob)->pixels_data.start + d->tex.offset);
 	d->tex_x = FP_TO_INT(d->tex.width * ray->wall_x);
 	if ((ray->side == 0 && dir->fp.x > 0) || (ray->side == 1 && dir->fp.y < 0))
 		d->tex_x = d->tex.width - d->tex_x - 1;

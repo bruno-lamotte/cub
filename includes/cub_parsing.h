@@ -73,6 +73,7 @@ void	safe_free(void **ptr);
 void	free_screen(t_screen *s);
 bool	init_mlx(t_screen *screen, char *title);
 void	free_img_tab(void *mlx, t_img *img, size_t lim);
+bool	get_one_xpm(void *mlx, char *path, t_img *img);
 bool	get_all_tex(t_data *data, t_screen *s);
 void	draw_tex_lib(t_screen *s, t_data *d, int i);
 

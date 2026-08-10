@@ -74,10 +74,21 @@ void    free_table(int **table)
 
 void    free_all(t_slr1 *data, int **table)
 {
+	if (!data)
+		return ;
+	if (!table)
+		table = data->table;
 	free_table(table);
+	data->table = NULL;
 	free_rules(data->rules);
+	data->rules = NULL;
 	free_symbols(data->symbols);
+	data->symbols = NULL;
 	free_states(data->states);
+	data->states = NULL;
 	if (data->state_behaviors)
+	{
 		free(data->state_behaviors);
+		data->state_behaviors = NULL;
+	}
 }

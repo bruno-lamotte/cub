@@ -36,6 +36,10 @@ void			draw_filled_circle(t_img *img, t_vec2 c, int r, int color);
 void			draw_circle_outline(t_img *img, t_vec2 c, int r, int color);
 void			draw_single_map_obj(t_engine *eng, t_interact_obj *obj, t_vec2 p, int is_sel);
 
+// srcs/exec/render/hud.c
+void			draw_hud_pixels(t_engine *eng);
+void			draw_hud_text(t_engine *eng);
+
 // srcs/exec/draw_column.c
 uint8_t			get_wall_tex_id(t_ray_data *ray, t_vec2 *ray_dir, void *blob);
 void			init_projection(t_draw *d, t_ray_data *ray, int win_height);
@@ -49,16 +53,14 @@ void			draw_floor_pixel(t_worker *w, t_floor_row *r, int x, float sh[2]);
 
 float			get_diff(float a, float b);
 
-// srcs/exec/vector_arithmetic.c
-void			rotate_vec_fp(t_vec2 *v, t_fp fp_cos, t_fp fp_sin);
+
 float			fast_inv_sqrt(float number);
 double			get_door_ratio(int mx, int my, int width, void *blob);
 int				is_door_horiz(int mx, int my, int w, void *blob);
 int				check_door_hit(t_ray_data *ray, t_player_rt *p, void *blob);
 
 // srcs/exec/player.c
-// t_player_rt		*init_player_rt(t_data *data);
-void	init_player_rt(t_data *data, t_player_rt *p);
+void			init_player_rt(t_data *data, t_player_rt *p);
 
 // srcs/exec/movement/
 int				is_walkable(int x, int y, void *blob);
@@ -68,15 +70,19 @@ void			update_position(t_engine *eng, t_keys *keys);
 void			update_rotation(t_player_rt *p, t_keys *keys);
 int				check_player_mstr_collision(double x, double y, t_engine *eng);
 
+// srcs/exec/exit.c
+bool			is_player_on_exit(t_engine *engine);
+
 // srcs/exec/doors.c
+
 void			update_doors(t_engine *engine);
 
 // srcs/exec/controls/
 int				key_press(int keycode, t_engine *engine);
 int				key_release(int keycode, t_engine *engine);
+void			free_engine_graphics(t_engine *engine);
 int				close_window(t_engine *engine, int ret_val);
 int				game_loop(t_engine *engine);
-void			free_engine_graphics(t_engine *engine);
 void			update_global_alarm_state(t_engine *eng);
 void			init_terminal_mode(t_engine *eng);
 void			update_interaction(t_engine *eng);
@@ -84,6 +90,9 @@ void			update_interaction(t_engine *eng);
 // srcs/exec/light_sources/
 void			init_static_lights(t_engine *engine);
 int				check_los(t_vec2 p1, t_vec2 p2, void *blob);
+int				check_thick_los(t_vec2 p1, t_vec2 p2, double radius, void *blob);
+int				check_los_shadow(float mx, float my, float px, float py);
+int				run_dda(int step[4], float d[4], float side[2], t_map_data *map);
 float			compute_light_at_point(double wx, double wy, void *blob, t_engine *eng);
 float			get_alarm_light_at_point(double wx, double wy, void *blob, t_engine *eng);
 
@@ -105,7 +114,7 @@ t_vec2			find_next_step(t_monster_rt *m, t_engine *eng, t_vec2 target, t_worker 
 void			mstr_move_towards(t_monster_rt *m, t_engine *eng,
 					t_vec2 target);
 void			mstr_go_to_guard(t_monster_rt *m, t_engine *eng, t_worker *w);
-void			mstr_chase(t_monster_rt *m, t_engine *eng);
+void			mstr_chase(t_monster_rt *m, t_engine *eng, t_worker *w);
 int				get_fsm_state_from_slr_state(t_engine *eng, int slr_state_id);
 void			mstr_patrol_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 void			mstr_chase_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
@@ -132,8 +141,8 @@ int				bfs_backtrack(int start_idx, int target_idx, int *parent);
 // srcs/exec/monsters_render/
 void			draw_monsters_3d(t_engine *eng);
 void			draw_objects_3d(t_engine *eng);
-double			get_sprite_coords(t_engine *eng, double sx, double sy,
-					double sp[2], double trans[2]);
+double			get_sprite_coords(t_engine *eng, t_vec2 pos,
+					t_vec2 *sp, t_vec2 *trans);
 int				collect_monsters(t_engine *eng, t_sprite *sprites, int count);
 int				collect_objects(t_engine *eng, t_sprite *sprites, int count);
 void			sort_sprites(t_sprite *sprites, int count);
@@ -142,5 +151,19 @@ void			draw_monster_stripe(t_engine *eng, int stripe, int *w_h,
 void			draw_object_stripe(t_engine *eng, int stripe, int *w_h,
 					t_sprite *s);
 void			load_monster_anim(t_engine *eng);
+t_mstr_anim_type	get_monster_active_anim(t_engine *eng, t_sprite *s, int *mirror);
+int				sh_idx(double t);
+void			calc_monster_bounds(t_engine *eng, t_sprite *s,
+					t_vec2 params, int bounds[2]);
+unsigned int	get_color_from_hex(char *hex);
+int				get_tok_index(char *tok, int cpp);
+t_img			copy_image_frame(void *mlx, t_img *src);
+void			parse_dxpm_row(char *line, t_img *dst, unsigned int *palette,
+					int cpp);
+unsigned int	get_transparent_color(t_img *img);
+void			parse_dxpm_header_line(char *line, int *cpp,
+					unsigned int *palette, t_img *prev);
+void			load_single_dxpm(void *mlx, char *path, t_img *prev,
+					t_img *dst);
 
 #endif

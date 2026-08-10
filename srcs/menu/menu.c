@@ -48,6 +48,8 @@ char	*menu(void)
 	t_menu	menu;
 	char	*out;
 
+	out = NULL;
+
 	if (!init_menu(&menu))
 		return (NULL);
 	render_menu(&menu);

@@ -2,32 +2,34 @@
 
 #define COLLISION_RADIUS 0.2
 
+static int	check_door_walkable(int x, int y, int w, void *blob)
+{
+	t_door_rt	*doors;
+	uint32_t	i;
+
+	doors = get_door_rt(blob);
+	i = -1;
+	while (++i < get_blob_hdr(blob)->door_rt.count)
+	{
+		if (doors[i].map_id == (uint32_t)(y * w + x))
+			return (doors[i].open_ratio_255 > 200);
+	}
+	return (0);
+}
+
 int	is_walkable(int x, int y, void *blob)
 {
 	uint8_t		*flags;
-	t_door_rt	*doors;
 	int			w;
-	int			h;
-	uint32_t	i;
 
 	w = get_map_width(get_blob_hdr(blob));
-	h = get_map_height(get_blob_hdr(blob));
 	flags = get_map_flags(blob);
-	if (x < 0 || x >= w || y < 0 || y >= h)
+	if (x < 0 || x >= w || y < 0 || y >= get_map_height(get_blob_hdr(blob)))
 		return (0);
 	if (flags[y * w + x] & CELL_HAS_WALL)
 		return (0);
 	if (flags[y * w + x] & CELL_HAS_DOOR)
-	{
-		doors = get_door_rt(blob);
-		i = -1;
-		while (++i < get_blob_hdr(blob)->door_rt.count)
-		{
-			if (doors[i].map_id == (uint32_t)(y * w + x))
-				return (doors[i].open_ratio_255 > 200);
-		}
-		return (0);
-	}
+		return (check_door_walkable(x, y, w, blob));
 	return (1);
 }
 

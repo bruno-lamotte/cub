@@ -19,7 +19,6 @@ SRCS = \
 	srcs/parsing/check_id.c \
 	srcs/parsing/get_tex.c \
 	srcs/parsing/validate_map.c \
-	srcs/parsing/solver.c \
 	srcs/parsing/init_mlx.c \
 	srcs/parsing/print_tex_lib.c \
 	srcs/blob/build_blob.c \
@@ -44,20 +43,28 @@ SRCS = \
 	srcs/exec/render/hacking_overlay.c \
 	srcs/exec/render/hacking_terminal.c \
 	srcs/exec/render/render_main.c \
+	srcs/exec/render/hud.c \
 	srcs/exec/raycasting.c \
 	srcs/exec/draw_column.c \
 	srcs/exec/draw_pixels.c \
 	srcs/exec/draw_floor.c \
 	srcs/exec/draw_floor_utils.c \
 	srcs/exec/exec_utils.c \
+	srcs/exec/exit.c \
 	srcs/exec/light_sources/light_init.c \
 	srcs/exec/light_sources/light_los.c \
+	srcs/exec/light_sources/light_los_utils.c \
 	srcs/exec/light_sources/light_compute.c \
 	srcs/exec/minimap/minimap_draw.c \
 	srcs/exec/minimap/minimap_utils.c \
 	srcs/exec/minimap_entities.c \
 	srcs/exec/monsters_render/sprite_collect.c \
 	srcs/exec/monsters_render/sprite_proj.c \
+	srcs/exec/monsters_render/sprite_proj_utils.c \
+	srcs/exec/monsters_render/dxpm_loader.c \
+	srcs/exec/monsters_render/dxpm_parser.c \
+	srcs/exec/monsters_render/sprite_anim_loader.c \
+	srcs/exec/monsters_render/sprite_object_draw.c \
 	srcs/exec/monsters_render/sprite_draw.c \
 	srcs/exec/monsters_ai/player_detection.c \
 	srcs/exec/monsters_ai/collision.c \

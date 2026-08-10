@@ -5,14 +5,27 @@
 
 void	free_engine_graphics(t_engine *engine)
 {
-	int	i;
+	int	a;
+	int	f;
 
-	i = -1;
+	if (engine->screen && engine->lamp_tex.img_ptr)
+		mlx_destroy_image(engine->screen->mlx_ptr, engine->lamp_tex.img_ptr);
+	if (engine->screen && engine->terminal_tex.img_ptr)
+		mlx_destroy_image(engine->screen->mlx_ptr, engine->terminal_tex.img_ptr);
 	if (engine->screen && engine->data)
 		free_img_tab(engine->screen->mlx_ptr, engine->data->img_tab,
 			engine->data->textures_len);
-	while (++i < engine->mstr_frame_count)
-	 	mlx_destroy_image(engine->screen->mlx_ptr, engine->mstr_frames[i].img_ptr);
+	a = -1;
+	while (++a < MSTR_ANIM_COUNT)
+	{
+		f = -1;
+		while (++f < engine->anims[a].frame_count)
+		{
+			if (engine->screen && engine->anims[a].frames[f].img_ptr)
+				mlx_destroy_image(engine->screen->mlx_ptr,
+					engine->anims[a].frames[f].img_ptr);
+		}
+	}
 	free_screen(engine->screen);
 	free_preprocessing_data(engine->data);
 }
@@ -22,33 +35,6 @@ int	close_window(t_engine *engine, int ret_val)
 	engine->ret_val = ret_val;
 	mlx_loop_end(engine->screen->mlx_ptr);
 	return (0);
-}
-
-bool is_player_on_exit(t_engine *engine)
-{
-	uint16_t x;
-	uint16_t y;
-	uint8_t	*flags;
-	uint8_t	*occ;
-
-	int idx;
-	char sym;
-
-	flags = get_map_flags(engine->blob);
-	occ = get_map_occ_ids(engine->blob);
-
-	x = (uint16_t)engine->player->pos.d.x;
-	y = (uint16_t)engine->player->pos.d.y;
-
-	idx = get_map_width((t_blob_hdr *)engine->blob) * y + x;
-	if (!(flags[idx] & CELL_HAS_OBJ))
-		return (false);
-
-	sym = engine->data->obj_defs[occ[idx]].symbol;
-	if (sym != 'X')
-		return (false);
-
-	return (true);
 }
 
 int	game_loop(t_engine *engine)
@@ -62,7 +48,15 @@ int	game_loop(t_engine *engine)
 	update_interaction(engine);
 	update_monsters(engine);
 	if (is_player_on_exit(engine))
+	{
+		printf("Victory! You reached the exit!\n");
 		close_window(engine, CUB_EXIT_MENU);
+	}
+	if (engine->player->hp <= 0)
+	{
+		printf("Game Over! You were defeated by a monster.\n");
+		close_window(engine, CUB_EXIT_MENU);
+	}
 	if (engine->hacking_timer <= 0 && !engine->terminal_mode)
 	{
 		update_position(engine, &engine->keys);

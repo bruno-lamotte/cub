@@ -47,6 +47,20 @@ free_preprocessing_data(e->data), false);
 	init_thread_pool(e);
 	init_static_lights(e);
 	load_monster_anim(e);
+	if (!get_one_xpm(e->screen->mlx_ptr, "assets/lampe.xpm", &e->lamp_tex))
+	{
+		printf("Error: Failed to load assets/lampe.xpm\n");
+		return (free_img_tab(e->screen->mlx_ptr, e->data->img_tab, \
+e->data->textures_len), free_screen(e->screen), \
+free_preprocessing_data(e->data), false);
+	}
+	if (!get_one_xpm(e->screen->mlx_ptr, "assets/terminal.xpm", &e->terminal_tex))
+	{
+		printf("Error: Failed to load assets/terminal.xpm\n");
+		return (free_img_tab(e->screen->mlx_ptr, e->data->img_tab, \
+e->data->textures_len), free_screen(e->screen), \
+free_preprocessing_data(e->data), false);
+	}
 	initialize_data(e->slr);
 	e->slr->table = create_parsing_table(e->slr);
 	if (!e->slr->table)
@@ -84,6 +98,7 @@ int	cub_menu(void)
 {
 	char *path;
 
+	printf("Launching level selection menu...\n");
 	while (1)
 	{
 		path = menu();

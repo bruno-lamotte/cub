@@ -1,4 +1,5 @@
 #include "cub.h"
+#include <stdio.h>
 
 void	draw_hacking_overlay(t_engine *eng);
 void	draw_hacking_text(t_engine *eng);
@@ -21,12 +22,15 @@ void	draw_hacking_prompt(t_engine *eng)
 			0x00FF00, "[E] PRESS E TO DECRYPT TERMINAL");
 }
 
+
+
 static void	draw_all_entities(t_engine *engine)
 {
 	draw_monsters_3d(engine);
 	draw_objects_3d(engine);
 	draw_minimap(engine);
 	draw_hacking_overlay(engine);
+	draw_hud_pixels(engine);
 }
 
 static void	sync_workers(t_thread_pool *pool)
@@ -41,6 +45,8 @@ static void	sync_workers(t_thread_pool *pool)
 	}
 	wait_for_jobs(pool);
 }
+
+
 
 void	render_frame(t_engine *engine)
 {
@@ -66,7 +72,10 @@ void	render_frame(t_engine *engine)
 	if (engine->terminal_mode)
 		draw_terminal_hacking_text(engine);
 	else
+	{
 		draw_hacking_text(engine);
+		draw_hud_text(engine);
+	}
 	display_fps(engine);
 	mlx_do_sync(screen->mlx_ptr);
 }
