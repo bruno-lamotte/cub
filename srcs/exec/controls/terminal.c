@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   terminal.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 static void	trigger_selected_obj(t_engine *eng)
@@ -33,8 +45,10 @@ static void	add_terminal_lights(t_engine *eng)
 		{
 			eng->interact_objs[eng->interact_obj_count].is_door = 0;
 			eng->interact_objs[eng->interact_obj_count].idx = i;
-			eng->interact_objs[eng->interact_obj_count].pos.d.x = eng->static_lights[i].x;
-			eng->interact_objs[eng->interact_obj_count].pos.d.y = eng->static_lights[i].y;
+			eng->interact_objs[eng->interact_obj_count].pos.d.x
+				= eng->static_lights[i].x;
+			eng->interact_objs[eng->interact_obj_count].pos.d.y
+				= eng->static_lights[i].y;
 			eng->interact_obj_count++;
 		}
 	}
@@ -48,7 +62,7 @@ static void	add_terminal_doors(t_engine *eng)
 	int			i;
 
 	doors = get_door_rt(eng->blob);
-	count = get_blob_hdr(eng->blob)->door_rt.count;
+	count = get_blob_hdr(eng->blob)->door_rt.u_data.count;
 	w = get_map_width(get_blob_hdr(eng->blob));
 	i = -1;
 	while (++i < count)
@@ -57,8 +71,10 @@ static void	add_terminal_doors(t_engine *eng)
 			break ;
 		eng->interact_objs[eng->interact_obj_count].is_door = 1;
 		eng->interact_objs[eng->interact_obj_count].idx = i;
-		eng->interact_objs[eng->interact_obj_count].pos.d.x = (doors[i].map_id % w) + 0.5;
-		eng->interact_objs[eng->interact_obj_count].pos.d.y = (doors[i].map_id / w) + 0.5;
+		eng->interact_objs[eng->interact_obj_count].pos.d.x
+			= (doors[i].map_id % w) + 0.5;
+		eng->interact_objs[eng->interact_obj_count].pos.d.y
+			= (doors[i].map_id / w) + 0.5;
 		eng->interact_obj_count++;
 	}
 }
@@ -76,13 +92,15 @@ int	handle_terminal_key(int keycode, t_engine *engine)
 {
 	if (keycode == XK_Escape)
 		engine->terminal_mode = 0;
-	else if (keycode == XK_Left || keycode == XK_a || keycode == 'a' || keycode == 'A')
+	else if (keycode == XK_Left || keycode == XK_a || keycode == 'a'
+		|| keycode == 'A')
 	{
 		if (engine->interact_obj_count > 0)
 			engine->selected_obj_idx = (engine->selected_obj_idx - 1
 					+ engine->interact_obj_count) % engine->interact_obj_count;
 	}
-	else if (keycode == XK_Right || keycode == XK_d || keycode == 'd' || keycode == 'D')
+	else if (keycode == XK_Right || keycode == XK_d || keycode == 'd'
+		|| keycode == 'D')
 	{
 		if (engine->interact_obj_count > 0)
 			engine->selected_obj_idx = (engine->selected_obj_idx + 1)

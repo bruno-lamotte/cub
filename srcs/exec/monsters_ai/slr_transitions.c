@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   slr_transitions.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 int		get_fsm_state_from_slr_state(t_engine *eng, int slr_state_id);
@@ -62,12 +74,14 @@ void	execute_slr_transition_by_id(t_engine *eng, t_monster_rt *m,
 				int sym_nbr)
 {
 	int	action;
+	int	top_state;
 
 	while (1)
 	{
 		if (m->state_stack_top < 1 || m->state_stack_top > 32)
 			reset_stack(m);
-		action = eng->slr->table[m->state_stack[m->state_stack_top - 1]][sym_nbr];
+		top_state = m->state_stack[m->state_stack_top - 1];
+		action = eng->slr->table[top_state][sym_nbr];
 		if (action == ACCEPTED)
 		{
 			reset_stack(m);

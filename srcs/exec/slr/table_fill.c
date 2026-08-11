@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   table_fill.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
 int	get_transition_from_symbol(t_state *state, char *symbol_name)
 {
-	t_list          *transitions;
-	t_transition    *transition;
+	t_list			*transitions;
+	t_transition	*transition;
 
 	transitions = state->transitions;
 	while (transitions)
@@ -57,7 +69,8 @@ void	fill_parsing_table(t_slr1 *data, int ***table)
 			it = (t_item *)items->content;
 			sym = get_symbol_after_dot(data, it);
 			if (sym)
-				(*table)[s->id][sym->nbr] = get_transition_from_symbol(s, sym->name);
+				(*table)[s->id][sym->nbr] = get_transition_from_symbol(s,
+						sym->name);
 			else
 				fill_table_when_reduce(data, table, states, items);
 			items = items->next;

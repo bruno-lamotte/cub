@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mstr_transitions.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 int	is_dest_reached(t_monster_rt *m)
@@ -28,7 +40,7 @@ void	patrol_transitions(t_monster_rt *m, t_engine *eng, int spotted)
 }
 
 void	chase_transitions(t_monster_rt *m, t_engine *eng, double d2,
-				int spotted)
+			int spotted)
 {
 	if (d2 < MSTR_MELEE_DIST_SQ)
 		execute_slr_transition(eng, m, "ACT_MELEE_STRIKE");
@@ -45,7 +57,7 @@ void	scan_transitions(t_monster_rt *m, t_engine *eng, int spotted)
 }
 
 void	run_grammar_transitions(t_monster_rt *m, t_engine *eng,
-				double d2, int spotted)
+			double d2, int spotted)
 {
 	if (m->state == MSTR_STATE_PATROL)
 		patrol_transitions(m, eng, spotted);
@@ -53,7 +65,8 @@ void	run_grammar_transitions(t_monster_rt *m, t_engine *eng,
 		chase_transitions(m, eng, d2, spotted);
 	else if (m->state == MSTR_STATE_ATTACK)
 	{
-		if (d2 > MSTR_ATTACK_CHASE_DIST_SQ || m->alert_timer > MSTR_ATTACK_DURATION)
+		if (d2 > MSTR_ATTACK_CHASE_DIST_SQ
+			|| m->alert_timer > MSTR_ATTACK_DURATION)
 		{
 			if (d2 < MSTR_MELEE_DIST_SQ)
 				m->alert_timer = 0;

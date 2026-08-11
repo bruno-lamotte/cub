@@ -1,10 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   patrol_select.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
-
-static int	is_cell_walkable(t_engine *eng, int x, int y)
-{
-	return (is_walkable_for_routing(x, y, eng->blob));
-}
 
 int	is_bottleneck_cell(t_engine *eng, int x, int y)
 {
@@ -43,14 +50,23 @@ int	score_patrol_cell(t_engine *eng, t_monster_rt *m, t_vec2 cell)
 	dist = sqrt(d.d.x * d.d.x + d.d.y * d.d.y);
 	if (dist < MSTR_PATROL_MIN_DIST || dist > MSTR_PATROL_MAX_DIST)
 		return (MSTR_SCORE_BAD_DIST);
-	neighbors = is_cell_walkable(eng, cell.i.x + 1, cell.i.y)
-		+ is_cell_walkable(eng, cell.i.x - 1, cell.i.y)
-		+ is_cell_walkable(eng, cell.i.x, cell.i.y + 1)
-		+ is_cell_walkable(eng, cell.i.x, cell.i.y - 1);
+	neighbors = is_walkable_for_routing(cell.i.x + 1, cell.i.y, eng->blob)
+		+ is_walkable_for_routing(cell.i.x - 1, cell.i.y, eng->blob)
+		+ is_walkable_for_routing(cell.i.x, cell.i.y + 1, eng->blob)
+		+ is_walkable_for_routing(cell.i.x, cell.i.y - 1, eng->blob);
 	score = MSTR_SCORE_BASE + neighbors * MSTR_SCORE_NEIGHBOR_MULT;
 	if (dist <= MSTR_PATROL_CLOSE_LIMIT)
 		score += MSTR_SCORE_CLOSE_BONUS;
 	return (score);
+}
+
+static int	calc_patrol_idx(t_engine *eng, t_monster_rt *m, int i, int divisor)
+{
+	int	seed;
+
+	seed = (int)(m->pos.d.x * MSTR_PATROL_SEED_X
+			+ m->pos.d.y * MSTR_PATROL_SEED_Y);
+	return ((eng->pool.current_frame + seed + i) % divisor);
 }
 
 int	select_patrol_cell(t_engine *eng, t_monster_rt *m,
@@ -69,8 +85,9 @@ int	select_patrol_cell(t_engine *eng, t_monster_rt *m,
 	i = -1;
 	while (++i < total)
 	{
-		idx = (eng->pool.current_frame + (int)(m->pos.d.x * MSTR_PATROL_SEED_X + m->pos.d.y * MSTR_PATROL_SEED_Y) + i) % divisor;
-		if (cells[idx].i.x == (int)m->pos.d.x && cells[idx].i.y == (int)m->pos.d.y)
+		idx = calc_patrol_idx(eng, m, i, divisor);
+		if (cells[idx].i.x == (int)m->pos.d.x
+			&& cells[idx].i.y == (int)m->pos.d.y)
 			continue ;
 		if (!is_cell_assigned(eng, m, cells[idx])
 			&& score_patrol_cell(eng, m, cells[idx]) > best[0])

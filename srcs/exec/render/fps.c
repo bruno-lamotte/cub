@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fps.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <unistd.h>
 #include <sys/time.h>
@@ -54,7 +66,8 @@ void	display_fps(t_engine *eng)
 			+ (now.tv_usec - eng->fps_last.tv_usec);
 		if (++eng->fps_frames && eng->fps_time_acc >= 500000L)
 		{
-			eng->fps_val = (int)(eng->fps_frames * 1000000.0 / eng->fps_time_acc);
+			eng->fps_val = (int)(eng->fps_frames * 1000000.0
+					/ eng->fps_time_acc);
 			eng->fps_frames = 0;
 			eng->fps_time_acc = 0;
 		}

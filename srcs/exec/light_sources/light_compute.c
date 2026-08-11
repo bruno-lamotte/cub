@@ -1,8 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   light_compute.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
-static float	get_player_light(float fx, float fy, t_player_rt *p,
-					void *blob)
+static t_vec2	make_vec2(double x, double y)
+{
+	t_vec2	v;
+
+	v.d.x = x;
+	v.d.y = y;
+	return (v);
+}
+
+float	get_player_light(float fx, float fy, t_player_rt *p,
+			void *blob)
 {
 	t_vec2	d;
 	float	d2;
@@ -13,7 +34,7 @@ static float	get_player_light(float fx, float fy, t_player_rt *p,
 	d2 = (float)(d.d.x * d.d.x + d.d.y * d.d.y);
 	if (d2 >= 36.0f)
 		return (0.0f);
-	if (!check_los(p->pos, (t_vec2){.d = {fx, fy}}, blob))
+	if (!check_los(p->pos, make_vec2(fx, fy), blob))
 		return (0.0f);
 	dist = d2 * fast_inv_sqrt(d2);
 	return ((float)((1.0 - dist / 6.0) * (1.0 - dist / 6.0)));
@@ -25,7 +46,6 @@ static float	get_mstr_light(float fx, float fy, t_monster_rt *m,
 	t_vec2	d;
 	float	d2;
 	float	inv_d;
-	float	dist;
 	double	cos_a;
 
 	d.d.x = (double)fx - m->pos.d.x;
@@ -37,15 +57,14 @@ static float	get_mstr_light(float fx, float fy, t_monster_rt *m,
 	cos_a = (d.d.x * m->dir.d.x + d.d.y * m->dir.d.y) * inv_d;
 	if (cos_a < 0.866)
 		return (0.0f);
-	if (!check_los(m->pos, (t_vec2){.d = {fx, fy}}, blob))
+	if (!check_los(m->pos, make_vec2(fx, fy), blob))
 		return (0.0f);
-	dist = d2 * inv_d;
-	return ((float)((1.0 - dist / 6.0) * (1.0 - dist / 6.0)
+	return ((float)((1.0 - (d2 * inv_d) / 6.0) * (1.0 - (d2 * inv_d) / 6.0)
 		* ((cos_a - 0.866) / (1.0 - 0.866))));
 }
 
-static inline float	accumulate_monster_light(float fx, float fy,
-						t_engine *eng, void *blob)
+float	accumulate_monster_light(float fx, float fy,
+			t_engine *eng, void *blob)
 {
 	t_monster_rt	*m;
 	int				i;
@@ -62,18 +81,8 @@ static inline float	accumulate_monster_light(float fx, float fy,
 	return (light);
 }
 
-static inline float	add_static_light(float d2, t_light *l)
-{
-	float	attenuation;
-
-	attenuation = 1.0f - d2 * fast_inv_sqrt(d2) / l->radius;
-	if (attenuation > 0.0f)
-		return (l->intensity * (attenuation * attenuation));
-	return (0.0f);
-}
-
-static inline float	accumulate_static_lights(float fx, float fy,
-						t_engine *eng, void *blob)
+float	accumulate_static_lights(float fx, float fy,
+			t_engine *eng, void *blob)
 {
 	t_light	*l;
 	float	d2;
@@ -90,71 +99,12 @@ static inline float	accumulate_static_lights(float fx, float fy,
 		d2 = (fx - l->x) * (fx - l->x) + (fy - l->y) * (fy - l->y);
 		if (d2 >= l->radius_sq)
 			continue ;
-		if (!check_los((t_vec2){.d = {l->x, l->y}},
-			(t_vec2){.d = {fx, fy}}, blob))
+		if (!check_los(make_vec2(l->x, l->y), make_vec2(fx, fy), blob))
 			continue ;
-		light += add_static_light(d2, l);
+		if (1.0f - d2 * fast_inv_sqrt(d2) / l->radius > 0.0f)
+			light += l->intensity * ((1.0f - d2 * fast_inv_sqrt(d2)
+						/ l->radius) * (1.0f - d2 * fast_inv_sqrt(d2)
+						/ l->radius));
 	}
 	return (light);
-}
-
-float	compute_light_at_point(double wx, double wy, void *blob, t_engine *eng)
-{
-	float	light;
-	float	fx;
-	float	fy;
-
-	fx = (float)wx;
-	fy = (float)wy;
-	light = get_player_light(fx, fy, eng->player, blob);
-	light += accumulate_monster_light(fx, fy, eng, blob);
-	light += accumulate_static_lights(fx, fy, eng, blob);
-	return (light);
-}
-
-static inline float	add_alarm_light(float d2, t_light *l, float factor)
-{
-	float	attenuation;
-
-	(void)l;
-	attenuation = 1.0f - d2 * fast_inv_sqrt(d2) / 6.0f;
-	if (attenuation > 0.0f)
-		return (factor * (attenuation * attenuation));
-	return (0.0f);
-}
-
-static inline float	accumulate_alarm_lights(float fx, float fy,
-						t_engine *eng, void *blob)
-{
-	t_light	*l;
-	float	d2;
-	float	light;
-	float	factor;
-	int		i;
-
-	light = 0.0f;
-	factor = 1.5f * (0.6f + 0.5f * sinf(eng->pool.current_frame * 0.15f));
-	i = -1;
-	while (++i < eng->static_light_count)
-	{
-		l = &eng->static_lights[i];
-		if (!l->is_alarm || !l->is_triggered)
-			continue ;
-		d2 = (fx - l->x) * (fx - l->x) + (fy - l->y) * (fy - l->y);
-		if (d2 >= l->radius_sq)
-			continue ;
-		if (!check_los((t_vec2){.d = {l->x, l->y}},
-			(t_vec2){.d = {fx, fy}}, blob))
-			continue ;
-		light += add_alarm_light(d2, l, factor);
-	}
-	return (light);
-}
-
-float	get_alarm_light_at_point(double wx, double wy, void *blob,
-			t_engine *eng)
-{
-	if (!eng->alarm_triggered)
-		return (0.0f);
-	return (accumulate_alarm_lights((float)wx, (float)wy, eng, blob));
 }

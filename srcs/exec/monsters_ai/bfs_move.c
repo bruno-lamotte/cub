@@ -1,7 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   bfs_move.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
-t_vec2	find_next_step(t_monster_rt *m, t_engine *eng, t_vec2 target, t_worker *w)
+t_vec2	find_next_step(t_monster_rt *m, t_engine *eng, t_vec2 target,
+			t_worker *w)
 {
 	t_vec2	start;
 	t_vec2	tgt;
@@ -13,7 +26,8 @@ t_vec2	find_next_step(t_monster_rt *m, t_engine *eng, t_vec2 target, t_worker *w
 	tgt.i.x = (int)target.d.x;
 	tgt.i.y = (int)target.d.y;
 	wdt = get_map_width(get_blob_hdr(eng->blob));
-	init_bfs_arrays(w->bfs_parent, wdt * get_map_height(get_blob_hdr(eng->blob)));
+	init_bfs_arrays(w->bfs_parent,
+		wdt * get_map_height(get_blob_hdr(eng->blob)));
 	if (bfs_run(start, tgt, eng, w))
 	{
 		next_idx = bfs_backtrack(start.i.y * wdt + start.i.x,
@@ -51,7 +65,8 @@ void	mstr_move_towards(t_monster_rt *m, t_engine *eng, t_vec2 target)
 		m->pos.d.y = d.d.y;
 }
 
-static void	check_alarm_dist(t_monster_rt *m, t_light *l, t_vec2 *ap, double *c)
+static void	check_alarm_dist(t_monster_rt *m, t_light *l, t_vec2 *ap,
+				double *c)
 {
 	double	dist2;
 
@@ -82,7 +97,8 @@ void	find_closest_alarm(t_monster_rt *m, t_engine *eng, t_vec2 *alarm_pos)
 	}
 }
 
-void	mstr_go_to_alarm(t_monster_rt *m, t_engine *eng, t_vec2 alarm_pos, t_worker *w)
+void	mstr_go_to_alarm(t_monster_rt *m, t_engine *eng, t_vec2 alarm_pos,
+			t_worker *w)
 {
 	t_vec2	next;
 

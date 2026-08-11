@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   render_main.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdio.h>
 
@@ -10,27 +22,24 @@ int		is_near_terminal(t_engine *eng);
 
 void	draw_hacking_prompt(t_engine *eng)
 {
+	int	x;
+	int	y;
+
 	if (!is_near_terminal(eng))
 		return ;
+	x = eng->screen->win_width / 2 - 120;
+	y = eng->screen->win_height / 2 + 100;
 	if (eng->alarm_triggered)
 		mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
-			eng->screen->win_width / 2 - 120, eng->screen->win_height / 2 + 100,
-			0xFF0000, "[E] PRESS E TO DEACTIVATE ALARM");
+			x, y, 0xFF0000, "[E] PRESS E TO DEACTIVATE ALARM");
 	else
 		mlx_string_put(eng->screen->mlx_ptr, eng->screen->win_ptr,
-			eng->screen->win_width / 2 - 120, eng->screen->win_height / 2 + 100,
-			0x00FF00, "[E] PRESS E TO DECRYPT TERMINAL");
+			x, y, 0x00FF00, "[E] PRESS E TO DECRYPT TERMINAL");
 }
 
-
-
-static void	draw_all_entities(t_engine *engine)
+void	draw_objects_3d(t_engine *eng)
 {
-	draw_monsters_3d(engine);
-	draw_objects_3d(engine);
-	draw_minimap(engine);
-	draw_hacking_overlay(engine);
-	draw_hud_pixels(engine);
+	(void)eng;
 }
 
 static void	sync_workers(t_thread_pool *pool)
@@ -46,19 +55,8 @@ static void	sync_workers(t_thread_pool *pool)
 	wait_for_jobs(pool);
 }
 
-
-
-void	render_frame(t_engine *engine)
+static void	render_screen_buffer(t_engine *engine, t_screen *screen)
 {
-	t_screen		*screen;
-	t_img			temp;
-
-	engine->pool.current_frame++;
-	screen = engine->screen;
-	sync_workers(&engine->pool);
-	temp = screen->img;
-	screen->img = screen->img2;
-	screen->img2 = temp;
 	if (engine->terminal_mode)
 	{
 		ft_bzero(screen->img2.addr, screen->win_width * screen->win_height
@@ -66,7 +64,27 @@ void	render_frame(t_engine *engine)
 		draw_terminal_hacking_screen(engine);
 	}
 	else
-		draw_all_entities(engine);
+	{
+		draw_monsters_3d(engine);
+		draw_objects_3d(engine);
+		draw_minimap(engine);
+		draw_hacking_overlay(engine);
+		draw_hud_pixels(engine);
+	}
+}
+
+void	render_frame(t_engine *engine)
+{
+	t_screen	*screen;
+	t_img		temp;
+
+	engine->pool.current_frame++;
+	screen = engine->screen;
+	sync_workers(&engine->pool);
+	temp = screen->img;
+	screen->img = screen->img2;
+	screen->img2 = temp;
+	render_screen_buffer(engine, screen);
 	mlx_put_image_to_window(screen->mlx_ptr, screen->win_ptr,
 		screen->img2.img_ptr, 0, 0);
 	if (engine->terminal_mode)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_tex_lib.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/02 17:51:55 by rstarcev          #+#    #+#             */
-/*   Updated: 2026/06/02 18:01:10 by rstarcev         ###   ########.fr       */
+/*   Created: 2026/08/11 02:00:00 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,37 +91,8 @@ int	get_img_per_line(t_screen *s)
 	return (img_per_line);
 }
 
-static void	make_yx_manip(int *x, int *y, int *col, int *row)
+void	make_yx_manip(int *x, int *y, int *col, int *row)
 {
 	*x = LIB_MARGIN_X + *col * (LIB_TEX_WIDTH + LIB_GAP_X);
 	*y = LIB_MARGIN_Y + *row * (LIB_TEX_HEIGHT + LIB_GAP_Y);
-}
-
-void	draw_tex_lib(t_screen *s, t_data *d, int i)
-{
-	int		img_per_line;
-	int		x;
-	int		y;
-	int		col;
-	int		row;
-
-	img_per_line = get_img_per_line(s);
-	i = -1;
-	while (++i < d->textures_len)
-	{
-		col = i % img_per_line;
-		row = i / img_per_line;
-		make_yx_manip(&x, &y, &col, &row);
-		draw_tex_lib_elem(s, &d->img_tab[i], x, y);
-	}
-	mlx_put_image_to_window(s->mlx_ptr, s->win_ptr, s->img.img_ptr, 0, 0);
-	i = -1;
-	while (++i < d->textures_len)
-	{
-		col = i % img_per_line;
-		row = i / img_per_line;
-		make_yx_manip(&x, &y, &col, &row);
-		mlx_string_put(s->mlx_ptr, s->win_ptr, x, \
-y + LIB_TEX_HEIGHT + LIB_TEXT_DIST, 0xFFFFFF, d->textures_defs[i].name);
-	}
 }

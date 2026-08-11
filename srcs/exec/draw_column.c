@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_column.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
-uint8_t	get_wall_tex_id(t_ray_data *ray, t_vec2 *ray_dir, void *blob)
+uint8_t	get_wall_tex_id(t_ray_data *ray, void *blob)
 {
 	t_bdef_wall	*walls;
 	t_bdef_door	*doors;
@@ -20,11 +32,11 @@ uint8_t	get_wall_tex_id(t_ray_data *ray, t_vec2 *ray_dir, void *blob)
 		return (doors[ray->hit_type].tex_front);
 	}
 	walls = get_wall_bdef(blob);
-	if (ray->side == 0 && ray_dir->fp.x > 0)
+	if (ray->side == 0 && ray->ray_dir.fp.x > 0)
 		return (walls[ray->hit_type].tex_west);
 	if (ray->side == 0)
 		return (walls[ray->hit_type].tex_east);
-	if (ray_dir->fp.y > 0)
+	if (ray->ray_dir.fp.y > 0)
 		return (walls[ray->hit_type].tex_north);
 	return (walls[ray->hit_type].tex_south);
 }
@@ -34,8 +46,8 @@ void	init_projection(t_draw *d, t_ray_data *ray, int win_height)
 	int64_t	height_fp;
 
 	if (ray->perp_wall_dist <= 0)
-		ray->perp_wall_dist = INT_TO_FP(1);
-	height_fp = ((int64_t)INT_TO_FP(win_height) << FP_SHIFT)
+		ray->perp_wall_dist = int_to_fp(1);
+	height_fp = ((int64_t)int_to_fp(win_height) << FP_SHIFT)
 		/ ray->perp_wall_dist;
 	height_fp = height_fp >> FP_SHIFT;
 	if (height_fp > win_height * 64)
@@ -52,34 +64,35 @@ void	init_projection(t_draw *d, t_ray_data *ray, int win_height)
 		d->draw_end = win_height - 1;
 }
 
-static void	set_tex_mapping(t_draw *d, t_ray_data *ray, t_vec2 *dir,
-				void *blob, int win_height)
+static void	set_tex_mapping(t_draw *d, t_ray_data *ray, void *blob,
+				int win_height)
 {
 	d->pixels = (uint32_t *)((uint8_t *)blob
-			+ ((t_blob_hdr *)blob)->pixels_data.start + d->tex.offset);
-	d->tex_x = FP_TO_INT(d->tex.width * ray->wall_x);
-	if ((ray->side == 0 && dir->fp.x > 0) || (ray->side == 1 && dir->fp.y < 0))
+			+ ((t_blob_hdr *)blob)->pixels_data.start + d->tex.u_val.offset);
+	d->tex_x = fp_to_int(d->tex.width * ray->wall_x);
+	if ((ray->side == 0 && ray->ray_dir.fp.x > 0)
+		|| (ray->side == 1 && ray->ray_dir.fp.y < 0))
 		d->tex_x = d->tex.width - d->tex_x - 1;
 	if (d->tex_x < 0)
 		d->tex_x = 0;
 	if (d->tex_x >= d->tex.width)
 		d->tex_x = d->tex.width - 1;
-	d->step = INT_TO_FP(d->tex.height) / d->line_height;
+	d->step = int_to_fp(d->tex.height) / d->line_height;
 	d->tex_pos = (d->draw_start - win_height / 2 + d->line_height / 2)
 		* d->step;
 }
 
-static void	init_texture_mapping(t_draw *d, t_ray_data *ray, t_vec2 *dir,
-				void *blob, int win_height)
+static void	init_texture_mapping(t_draw *d, t_ray_data *ray, void *blob,
+				int win_height)
 {
 	uint8_t		tex_id;
 	t_bdef_tex	*tex_defs;
 
-	tex_id = get_wall_tex_id(ray, dir, blob);
+	tex_id = get_wall_tex_id(ray, blob);
 	tex_defs = get_tex_bdef(blob);
 	d->tex = tex_defs[tex_id];
 	if (d->tex.width > 0 && d->tex.height > 0)
-		set_tex_mapping(d, ray, dir, blob, win_height);
+		set_tex_mapping(d, ray, blob, win_height);
 	else
 	{
 		d->pixels = NULL;
@@ -98,6 +111,6 @@ void	draw_column(int x, t_worker *w, t_ray_data *ray)
 	d.x = x;
 	init_projection(&d, ray, w->screen->win_height);
 	ray->draw_end = d.draw_end;
-	init_texture_mapping(&d, ray, &ray->ray_dir, w->blob, w->screen->win_height);
+	init_texture_mapping(&d, ray, w->blob, w->screen->win_height);
 	render_pixels(&d, w, ray, lut);
 }

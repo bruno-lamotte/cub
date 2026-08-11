@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   item.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
-t_item  *create_new_item(t_rule *rule, int dot_pos)
+t_item	*create_new_item(t_rule *rule, int dot_pos)
 {
-	t_item      *new_item;
-	static int  id = 0;
+	t_item		*new_item;
+	static int	id = 0;
 
 	new_item = malloc(sizeof(t_item));
 	if (!new_item)
@@ -15,9 +27,10 @@ t_item  *create_new_item(t_rule *rule, int dot_pos)
 	return (new_item);
 }
 
-t_symbol *get_symbol_from_list(t_slr1 *data, t_list *right_symbols, int dot_pos)
+t_symbol	*get_symbol_from_list(t_slr1 *data, t_list *right_symbols,
+				int dot_pos)
 {
-	t_list  *current;
+	t_list	*current;
 
 	current = right_symbols;
 	while (dot_pos--)

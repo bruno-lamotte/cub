@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub_slr.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB_SLR_H
 # define CUB_SLR_H
 
@@ -25,8 +37,8 @@ int				add_first_if_token(t_symbol *left_symbol,
 					t_symbol *right_symbol);
 int				should_look_for_next_right_symbol(t_symbol *left_symbol,
 					t_rule *rule);
-void			get_first_dfs(t_slr1 *data, t_rule *rule, t_symbol *left_symbol,
-					t_symbol *right_symbol);
+void			get_first_dfs(t_slr1 *data, t_rule *rule,
+					t_symbol *left_symbol, t_symbol *right_symbol);
 void			get_firsts(t_slr1 *data);
 
 void			add_dollar_to_start_symbol(t_slr1 *data);

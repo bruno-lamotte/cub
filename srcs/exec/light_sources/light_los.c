@@ -1,47 +1,59 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   light_los.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
-static void	init_los_steps(float mx, float my, float d[4], float side[2],
-						int step[4])
+static void	init_los_steps(t_vec2 m, float d[4], float side[2],
+				int step[4])
 {
-	step[2] = (int)mx;
-	step[3] = (int)my;
+	step[2] = (int)m.d.x;
+	step[3] = (int)m.d.y;
 	if (d[0] < 0)
 	{
 		step[0] = -1;
-		side[0] = (mx - step[2]) * d[2];
+		side[0] = ((float)m.d.x - step[2]) * d[2];
 	}
 	else
 	{
 		step[0] = 1;
-		side[0] = (step[2] + 1.0f - mx) * d[2];
+		side[0] = (step[2] + 1.0f - (float)m.d.x) * d[2];
 	}
 	if (d[1] < 0)
 	{
 		step[1] = -1;
-		side[1] = (my - step[3]) * d[3];
+		side[1] = ((float)m.d.y - step[3]) * d[3];
 	}
 	else
 	{
 		step[1] = 1;
-		side[1] = (step[3] + 1.0f - my) * d[3];
+		side[1] = (step[3] + 1.0f - (float)m.d.y) * d[3];
 	}
 }
 
-static void	init_los_dda(float mx, float my, float px, float py,
-						float d[4], float side[2], int step[4])
+static void	init_los_dda(t_vec2 m, t_vec2 p, float d_side[6],
+				int step[4])
 {
-	d[0] = px - mx;
-	d[1] = py - my;
-	if (d[0] == 0.0f)
-		d[2] = 1e30f;
+	d_side[0] = (float)(p.d.x - m.d.x);
+	d_side[1] = (float)(p.d.y - m.d.y);
+	if (d_side[0] == 0.0f)
+		d_side[2] = 1e30f;
 	else
-		d[2] = fabsf(1.0f / d[0]);
-	if (d[1] == 0.0f)
-		d[3] = 1e30f;
+		d_side[2] = fabsf(1.0f / d_side[0]);
+	if (d_side[1] == 0.0f)
+		d_side[3] = 1e30f;
 	else
-		d[3] = fabsf(1.0f / d[1]);
-	init_los_steps(mx, my, d, side, step);
+		d_side[3] = fabsf(1.0f / d_side[1]);
+	init_los_steps(m, d_side, &d_side[4], step);
 }
 
 int	check_los(t_vec2 p1, t_vec2 p2, void *blob)
@@ -49,23 +61,20 @@ int	check_los(t_vec2 p1, t_vec2 p2, void *blob)
 	t_map_data	map;
 	t_blob_hdr	*hdr;
 	int			step[4];
-	float		d[4];
-	float		side[2];
+	float		d_side[6];
 
 	hdr = get_blob_hdr(blob);
-	map.w = hdr->map.map_data.width;
-	map.h = hdr->map.map_data.height;
+	map.w = hdr->map.u_data.map_data.width;
+	map.h = hdr->map.u_data.map_data.height;
 	map.flags = get_map_flags(blob);
 	map.doors = get_door_rt(blob);
-	map.door_count = hdr->door_rt.count;
+	map.door_count = hdr->door_rt.u_data.count;
 	map.target_x = (int)p2.d.x;
 	map.target_y = (int)p2.d.y;
-	if (!check_los_shadow((float)p1.d.x, (float)p1.d.y,
-			(float)p2.d.x, (float)p2.d.y))
+	if (!check_los_shadow(p1, p2))
 		return (0);
-	init_los_dda((float)p1.d.x, (float)p1.d.y, (float)p2.d.x, (float)p2.d.y,
-		d, side, step);
-	return (run_dda(step, d, side, &map));
+	init_los_dda(p1, p2, d_side, step);
+	return (run_dda(step, d_side, &d_side[4], &map));
 }
 
 static int	check_side_los(t_vec2 p1, t_vec2 p2, t_vec2 perp, void *blob)

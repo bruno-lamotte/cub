@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mstr_behaviors_move.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
@@ -39,8 +51,10 @@ static t_vec2	get_chase_target(t_monster_rt *m, t_engine *eng, t_worker *w)
 	int		dy;
 	double	d2;
 
-	d2 = (m->pos.d.x - eng->player->pos.d.x) * (m->pos.d.x - eng->player->pos.d.x)
-		+ (m->pos.d.y - eng->player->pos.d.y) * (m->pos.d.y - eng->player->pos.d.y);
+	d2 = (m->pos.d.x - eng->player->pos.d.x)
+		* (m->pos.d.x - eng->player->pos.d.x)
+		+ (m->pos.d.y - eng->player->pos.d.y)
+		* (m->pos.d.y - eng->player->pos.d.y);
 	if (d2 < 2.0 && check_los(m->pos, eng->player->pos, eng->blob))
 		return (eng->player->pos);
 	dx = (int)m->pos.d.x - (int)eng->player->pos.d.x;
@@ -49,8 +63,8 @@ static t_vec2	get_chase_target(t_monster_rt *m, t_engine *eng, t_worker *w)
 		dx = -dx;
 	if (dy < 0)
 		dy = -dy;
-	if (dx + dy <= 1 || check_thick_los(m->pos, eng->player->pos, MSTR_LOS_THICKNESS,
-			eng->blob))
+	if (dx + dy <= 1 || check_thick_los(m->pos, eng->player->pos,
+			MSTR_LOS_THICKNESS, eng->blob))
 		return (eng->player->pos);
 	return (find_next_step(m, eng, eng->player->pos, w));
 }

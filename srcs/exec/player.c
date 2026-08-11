@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   player.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
@@ -32,16 +44,3 @@ void	init_player_rt(t_data *data, t_player_rt *p)
 	set_player_dir(p, data->player_dir);
 	p->hp = PLAYER_MAX_HP;
 }
-
-// t_player_rt	*init_player_rt(t_data *data)
-// {
-// 	t_player_rt	*p;
-
-// 	p = ft_calloc(1, sizeof(t_player_rt));
-// 	if (!p)
-// 		return (NULL);
-// 	p->pos.d.x = data->player_col + 0.5;
-// 	p->pos.d.y = data->player_row + 0.5;
-// 	set_player_dir(p, data->player_dir);
-// 	return (p);
-// }

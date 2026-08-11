@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_floor.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 static void	draw_interpolated_pixels(t_worker *w, t_floor_row *r,
@@ -38,7 +50,8 @@ static void	draw_exact_pixels(t_worker *w, t_floor_row *r,
 	}
 }
 
-static void	draw_floor_segment(t_worker *w, t_floor_row *r, int x_start, int x_end)
+static void	draw_floor_segment(t_worker *w, t_floor_row *r,
+				int x_start, int x_end)
 {
 	double	pos[4];
 	float	sh_se[2][2];

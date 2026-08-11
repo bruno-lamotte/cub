@@ -1,12 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub_types_slr.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB_TYPES_SLR_H
 # define CUB_TYPES_SLR_H
 
-struct s_rule;
-struct s_engine;
-struct s_monster_rt;
+struct			s_rule;
+struct			s_engine;
+struct			s_monster_rt;
+struct			s_worker;
 
-struct s_worker;
-typedef void (*t_behavior_fn)(struct s_monster_rt *, struct s_engine *, struct s_worker *);
+typedef void	(*t_behavior_fn)(struct s_monster_rt *m,
+					struct s_engine *eng,
+					struct s_worker *w);
 
 typedef struct s_item
 {

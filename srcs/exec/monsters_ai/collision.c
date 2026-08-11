@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   collision.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 int	check_monster_collision(double x, double y, int self_idx, t_engine *eng)
@@ -37,8 +49,10 @@ int	check_monster_self_collision(t_monster_rt *self, t_engine *eng)
 	{
 		if (&mstr[i] == self || (mstr[i].flags & MONSTER_DEAD))
 			continue ;
-		d2 = (self->pos.d.x - mstr[i].pos.d.x) * (self->pos.d.x - mstr[i].pos.d.x)
-			+ (self->pos.d.y - mstr[i].pos.d.y) * (self->pos.d.y - mstr[i].pos.d.y);
+		d2 = (self->pos.d.x - mstr[i].pos.d.x)
+			* (self->pos.d.x - mstr[i].pos.d.x)
+			+ (self->pos.d.y - mstr[i].pos.d.y)
+			* (self->pos.d.y - mstr[i].pos.d.y);
 		if (d2 < MSTR_COLLISION_DIST_SQ)
 			return (1);
 	}

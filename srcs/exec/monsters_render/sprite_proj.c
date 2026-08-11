@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sprite_proj.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
@@ -49,7 +61,7 @@ static inline void	draw_sprite_stripes(t_engine *eng, t_vec2 trans,
 	stripe = whb[5] - 1;
 	while (++stripe <= whb[6])
 	{
-		if (trans.d.y < FP_TO_FLOAT(eng->z_buffer[stripe].perp_wall_dist))
+		if (trans.d.y < fp_to_float(eng->z_buffer[stripe].perp_wall_dist))
 		{
 			if (s->is_monster)
 				draw_monster_stripe(eng, stripe, whb, s);

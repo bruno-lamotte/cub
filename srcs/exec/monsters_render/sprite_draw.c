@@ -1,21 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sprite_draw.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
-
-typedef struct s_mstr_draw
-{
-	t_img			*tex;
-	unsigned int	transparent_color;
-	double			sprite_height;
-	int				draw_start_y;
-	int				draw_start_x;
-	double			scaled_width;
-	int				tex_x;
-	int				y_start;
-	int				y_end;
-	int				stripe;
-	int				w_h_0;
-	int				mirror;
-}	t_mstr_draw;
 
 static int	get_speed_div(t_engine *eng, t_mstr_anim *anim)
 {
@@ -26,19 +22,12 @@ static int	get_speed_div(t_engine *eng, t_mstr_anim *anim)
 	return (MSTR_PATROL_SPEED_DIV);
 }
 
-static int	calc_mstr_draw_params(t_engine *eng, t_sprite *s, t_mstr_draw *d)
+static int	sub_calc_mstr_params(t_engine *eng, t_mstr_draw *d,
+				t_mstr_anim *anim, t_vec2 vt[2])
 {
-	t_vec2			vt[2];
-	t_mstr_anim		*anim;
-	double			scale;
+	double	scale;
 
-	anim = &eng->anims[get_monster_active_anim(eng, s, &d->mirror)];
-	if (anim->frame_count <= 0)
-		return (0);
-	d->tex = &anim->frames[(eng->pool.current_frame / get_speed_div(eng,
-				anim)) % anim->frame_count];
-	d->transparent_color = get_transparent_color(&anim->frames[0]);
-	get_sprite_coords(eng, s->pos, &vt[0], &vt[1]);
+	get_sprite_coords(eng, vt[0], &vt[0], &vt[1]);
 	scale = (d->w_h_0 * MONSTER_SCALE) / MSTR_ORIG_WIDTH;
 	if (anim == &eng->anims[MSTR_ANIM_PUNCH])
 		scale *= 0.7;
@@ -58,6 +47,21 @@ static int	calc_mstr_draw_params(t_engine *eng, t_sprite *s, t_mstr_draw *d)
 	d->draw_start_y = (eng->screen->win_height / 2 + d->w_h_0 * 0.5)
 		- d->sprite_height;
 	return (1);
+}
+
+static int	calc_mstr_draw_params(t_engine *eng, t_sprite *s, t_mstr_draw *d)
+{
+	t_vec2			vt[2];
+	t_mstr_anim		*anim;
+
+	anim = &eng->anims[get_monster_active_anim(eng, s, &d->mirror)];
+	if (anim->frame_count <= 0)
+		return (0);
+	d->tex = &anim->frames[(eng->pool.current_frame / get_speed_div(eng,
+				anim)) % anim->frame_count];
+	d->transparent_color = get_transparent_color(&anim->frames[0]);
+	vt[0] = s->pos;
+	return (sub_calc_mstr_params(eng, d, anim, vt));
 }
 
 static void	loop_draw_mstr_stripe(t_engine *eng, t_sprite *s, t_mstr_draw *d)
@@ -81,12 +85,11 @@ static void	loop_draw_mstr_stripe(t_engine *eng, t_sprite *s, t_mstr_draw *d)
 			continue ;
 		col = *(unsigned int *)(d->tex->addr + (tex_y * d->tex->line_len
 					+ d->tex_x * (d->tex->bpp / 8)));
-		if (col == d->transparent_color || (col & 0x00FFFFFF) == 0x00FFFFFF)
-			continue ;
-		put_pixel(&eng->screen->img2, d->stripe, y,
-			((int)(((col >> 16) & 0xFF) * s->shade) << 16) |
-			((int)(((col >> 8) & 0xFF) * s->shade) << 8) |
-			(int)((col & 0xFF) * s->shade));
+		if (col != d->transparent_color && (col & 0x00FFFFFF) != 0x00FFFFFF)
+			put_pixel(&eng->screen->img2, d->stripe, y,
+				(((int)(((col >> 16) & 0xFF) * s->shade) << 16)
+					| ((int)(((col >> 8) & 0xFF) * s->shade) << 8)
+					| (int)((col & 0xFF) * s->shade)));
 	}
 }
 

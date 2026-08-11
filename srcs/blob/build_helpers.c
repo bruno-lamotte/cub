@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   build_helpers.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rstarcev <rstarcev@student.42.fr>          +#+  +:+       +#+        */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/02 20:51:57 by rstarcev          #+#    #+#             */
-/*   Updated: 2026/06/02 20:52:47 by rstarcev         ###   ########.fr       */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/cub.h"
+
+bool	size_to_u32(size_t val, uint32_t *out)
+{
+	return (!__builtin_add_overflow(val, 0, out));
+}
 
 int16_t	get_block_id(char sym, t_data *d, t_block_type type)
 {

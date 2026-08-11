@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mstr_update.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 static void	update_monster_job(void *arg, t_worker *w)
@@ -31,7 +43,6 @@ void	update_monsters(t_engine *eng)
 {
 	t_monster_rt	*mstr;
 	t_mstr_job		jobs[64];
-	static int		frame = 0;
 
 	if (eng->data->monster_rt_count <= 0)
 		return ;
@@ -40,7 +51,4 @@ void	update_monsters(t_engine *eng)
 		init_monster_targets(eng);
 	queue_monster_jobs(eng, mstr, jobs);
 	update_alarm_disarm(eng);
-	frame++;
-	if (frame % MSTR_DEBUG_PRINT_FREQ == 0)
-		print_monsters_debug(mstr, eng->data->monster_rt_count);
 }

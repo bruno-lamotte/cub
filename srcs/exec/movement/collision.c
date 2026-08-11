@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   collision.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 #define COLLISION_RADIUS 0.2
@@ -9,7 +21,7 @@ static int	check_door_walkable(int x, int y, int w, void *blob)
 
 	doors = get_door_rt(blob);
 	i = -1;
-	while (++i < get_blob_hdr(blob)->door_rt.count)
+	while (++i < get_blob_hdr(blob)->door_rt.u_data.count)
 	{
 		if (doors[i].map_id == (uint32_t)(y * w + x))
 			return (doors[i].open_ratio_255 > 200);

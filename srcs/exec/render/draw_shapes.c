@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_shapes.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
-// Prototypes internes ou en-têtes
 void	draw_rect(t_img *img, t_vec2 p, t_vec2 sz, int color);
 void	draw_filled_circle(t_img *img, t_vec2 c, int r, int color);
 
@@ -25,7 +36,8 @@ void	draw_circle_outline(t_img *img, t_vec2 c, int r, int color)
 	}
 }
 
-void	draw_single_map_obj(t_engine *eng, t_interact_obj *obj, t_vec2 p, int is_sel)
+void	draw_single_map_obj(t_engine *eng, t_interact_obj *obj,
+			t_vec2 p, int is_sel)
 {
 	t_door_rt	*doors;
 	int			color;

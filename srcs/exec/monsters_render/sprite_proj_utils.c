@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sprite_proj_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
@@ -35,19 +47,8 @@ static int	calc_monster_octant(t_engine *eng, t_monster_rt *m)
 	return ((int)(rel_angle / (M_PI / 4.0)));
 }
 
-t_mstr_anim_type	get_monster_active_anim(t_engine *eng, t_sprite *s,
-						int *mirror)
+static t_mstr_anim_type	select_octant_anim(int octant, int *mirror)
 {
-	t_monster_rt		*m;
-	int					octant;
-
-	m = &get_monster_rt(eng->blob)[s->m_idx];
-	*mirror = 0;
-	if (m->state == MSTR_STATE_ATTACK)
-		return (MSTR_ANIM_PUNCH);
-	if (m->state == MSTR_STATE_CHASE)
-		return (MSTR_ANIM_COURSE);
-	octant = calc_monster_octant(eng, m);
 	if (octant == 0)
 		return (MSTR_ANIM_FACE);
 	if (octant == 1 || octant == 7)
@@ -64,6 +65,20 @@ t_mstr_anim_type	get_monster_active_anim(t_engine *eng, t_sprite *s,
 		return (MSTR_ANIM_DOS);
 	*mirror = (octant == 5);
 	return (MSTR_ANIM_18DOS);
+}
+
+t_mstr_anim_type	get_monster_active_anim(t_engine *eng, t_sprite *s,
+						int *mirror)
+{
+	t_monster_rt	*m;
+
+	m = &get_monster_rt(eng->blob)[s->m_idx];
+	*mirror = 0;
+	if (m->state == MSTR_STATE_ATTACK)
+		return (MSTR_ANIM_PUNCH);
+	if (m->state == MSTR_STATE_CHASE)
+		return (MSTR_ANIM_COURSE);
+	return (select_octant_anim(calc_monster_octant(eng, m), mirror));
 }
 
 void	calc_monster_bounds(t_engine *eng, t_sprite *s,

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub_types.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB_TYPES_H
 # define CUB_TYPES_H
 
@@ -16,11 +28,11 @@
 # include "../mlx/mlx.h"
 # include "../libft/libft.h"
 
-# define MAX_SECTION_ITEMS 254 // uint8_t max
-# define MAX_SECTION_LINE_LEN 254 // uint8_t max
-# define MAX_MAP_WIDTH 65534 // uint16_t max
-# define MAX_MAP_HEIGHT 65534 // uint16_t max
-# define N_DEF_SECTION 7 // all the section that are not maps
+# define MAX_SECTION_ITEMS 254
+# define MAX_SECTION_LINE_LEN 254
+# define MAX_MAP_WIDTH 65534
+# define MAX_MAP_HEIGHT 65534
+# define N_DEF_SECTION 7
 # define MAX_DEBUG_LINE 1024
 # define HEX_COLOR_LEN 8
 # define ACCEPTED 424242
@@ -28,41 +40,44 @@
 # define DIST_MAX 1024
 # define GAMMA 1.0f
 
-/* Définition stricte du type virgule fixe 16.16 */
-typedef int32_t t_fp;
+typedef int32_t	t_fp;
 
 # define FP_SHIFT 16
 # define FP_SCALE 65536
-# define INT_TO_FP(n) ((n) << FP_SHIFT)
-# define FP_TO_INT(n) ((n) >> FP_SHIFT)
-# define FLOAT_TO_FP(f) ((t_fp)((f) * FP_SCALE))
-# define FP_TO_FLOAT(x) ((float)(x) / FP_SCALE)
-# define DOUBLE_TO_FP(d) ((t_fp)((d) * FP_SCALE))
-# define FP_MUL(a, b) ((t_fp)(((int64_t)(a) * (int64_t)(b)) >> FP_SHIFT))
-# define FP_DIV(a, b) ((t_fp)(((int64_t)(a) << FP_SHIFT) / (b)))
 
-/* Structure de vecteur unifiée avec unions */
+t_fp			int_to_fp(int n);
+int				fp_to_int(t_fp n);
+t_fp			float_to_fp(float f);
+float			fp_to_float(t_fp x);
+t_fp			double_to_fp(double d);
+t_fp			fp_mul(t_fp a, t_fp b);
+t_fp			fp_div(t_fp a, t_fp b);
+
 typedef union u_vec2
 {
-	struct {
+	struct s_dvec2
+	{
 		double		x;
 		double		y;
 	} d;
-	struct {
+	struct s_ivec2
+	{
 		int			x;
 		int			y;
 	} i;
-	struct {
+	struct s_uvec2
+	{
 		uint32_t	x;
 		uint32_t	y;
 	} u;
-	struct {
+	struct s_fpvec2
+	{
 		t_fp		x;
 		t_fp		y;
 	} fp;
-} t_vec2;
+}	t_vec2;
 
-typedef struct	s_texture_def
+typedef struct s_texture_def
 {
 	char		*name;
 	char		*path;
@@ -70,32 +85,32 @@ typedef struct	s_texture_def
 	bool		is_color;
 }				t_texture_def;
 
-typedef struct	s_wall_def
+typedef struct s_wall_def
 {
 	uint8_t		tex_north;
 	uint8_t		tex_west;
 	uint8_t		tex_south;
 	uint8_t		tex_east;
-	char 		symbol;
-} t_wall_def;
+	char		symbol;
+}				t_wall_def;
 
-typedef struct	s_air_def
+typedef struct s_air_def
 {
 	uint8_t		tex_floor;
 	uint8_t		tex_ceiling;
-	char 		symbol;
+	char		symbol;
 }				t_air_def;
 
-typedef struct	s_door_def
+typedef struct s_door_def
 {
 	uint8_t		tex_front;
 	uint8_t		tex_back;
 	uint8_t		tex_side;
-	char 		symbol;
+	char		symbol;
 	bool		is_closed;
 }				t_door_def;
 
-typedef struct	s_monster_def
+typedef struct s_monster_def
 {
 	uint8_t		hp;
 	uint8_t		size_pc;
@@ -103,7 +118,7 @@ typedef struct	s_monster_def
 	char		symbol;
 }				t_monster_def;
 
-typedef struct	s_obj_def
+typedef struct s_obj_def
 {
 	uint8_t		tex;
 	uint8_t		size_pc;
@@ -111,7 +126,7 @@ typedef struct	s_obj_def
 	uint8_t		pad;
 }				t_obj_def;
 
-typedef enum	e_dir
+typedef enum e_dir
 {
 	DIR_NONE,
 	DIR_NORTH,
@@ -120,7 +135,7 @@ typedef enum	e_dir
 	DIR_WEST
 }				t_dir;
 
-typedef struct	s_player_def
+typedef struct s_player_def
 {
 	t_dir		dir;
 	uint8_t		tex;
@@ -138,74 +153,56 @@ typedef struct s_img
 	int			endian;
 	int			width;
 	int			height;
-}	t_img;
+}				t_img;
 
-typedef struct	s_data
+typedef struct s_data
 {
-	// definitions
 	uint32_t		textures_section_id;
 	uint8_t			textures_len;
-	t_texture_def 	*textures_defs;
-
+	t_texture_def	*textures_defs;
 	uint32_t		walls_section_id;
 	uint8_t			walls_len;
 	t_wall_def		*walls_defs;
-
 	uint32_t		airs_section_id;
 	uint8_t			airs_len;
 	t_air_def		*airs_defs;
-
 	uint32_t		doors_section_id;
 	uint8_t			doors_len;
-	t_door_def 		*doors_defs;
-
+	t_door_def		*doors_defs;
 	uint32_t		monsters_section_id;
 	uint8_t			monsters_len;
 	t_monster_def	*monsters_defs;
-
 	uint32_t		objs_section_id;
 	uint8_t			obj_len;
 	t_obj_def		*obj_defs;
-
 	uint32_t		players_section_id;
 	uint8_t			player_len;
-	t_player_def 	*player_defs;
-
-	// player data
+	t_player_def	*player_defs;
 	uint16_t		player_row;
 	uint16_t		player_col;
 	t_dir			player_dir;
-
-	// ids arrays
-	char *all_ids;
-	char *wall_ids;
-	char *air_ids;
-	char *door_ids;
-	char *monster_ids;
-	char *obj_ids;
-	char *player_ids;
-
+	char			*all_ids;
+	char			*wall_ids;
+	char			*air_ids;
+	char			*door_ids;
+	char			*monster_ids;
+	char			*obj_ids;
+	char			*player_ids;
 	uint16_t		door_rt_count;
 	uint16_t		monster_rt_count;
-
-	// mandatory map
-	uint32_t	m_map_section_id;
-	char		**m_map;
-	uint16_t	m_max_width; 
-	uint16_t	m_height;
-
-	bool have_bonus;
-	// bonus map
-	uint32_t	b_map_section_id;
-	char		**b_map;
-	uint16_t	b_max_width;
-	uint16_t	b_height;
-
-	// t_img s
-	t_img		*img_tab;
+	uint32_t		m_map_section_id;
+	char			**m_map;
+	uint16_t		m_max_width;
+	uint16_t		m_height;
+	bool			have_bonus;
+	uint32_t		b_map_section_id;
+	char			**b_map;
+	uint16_t		b_max_width;
+	uint16_t		b_height;
+	t_img			*img_tab;
 }				t_data;
 
-typedef enum	e_perr
+typedef enum e_perr
 {
 	PERR_NONE = 0,
 	PERR_OVERFLOW,
@@ -251,33 +248,29 @@ typedef enum	e_perr
 	PERR_MAP_UNSOLVABLE
 }				t_perr;
 
-typedef struct	s_index
+typedef struct s_index
 {
 	size_t			line;
 	size_t			col;
 	t_perr			err;
 }				t_index;
 
-typedef struct		s_parsing
+typedef struct s_parsing
 {
 	char			**file_content;
 	t_data			*data;
 	t_index			idx;
-}					t_parsing;
+}				t_parsing;
 
 typedef struct s_keys
 {
-    bool w;
-    bool a;
-    bool s;
-    bool d;
-    bool left;
-    bool right;
-    bool e;
-}   t_keys;
-
-// Include sub-types headers
-# include "cub_types_slr.h"
-# include "cub_types_exec.h"
+	bool			w;
+	bool			a;
+	bool			s;
+	bool			d;
+	bool			left;
+	bool			right;
+	bool			e;
+}				t_keys;
 
 #endif

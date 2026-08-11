@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   firsts.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
-int	does_list_contains_this_symbol(t_list *list, char *name);
+int		does_list_contains_this_symbol(t_list *list, char *name);
 void	get_first_dfs(t_slr1 *data, t_rule *rule, t_symbol *left_symbol,
 			t_symbol *right_symbol);
 
@@ -98,29 +110,5 @@ void	get_first_dfs(t_slr1 *data, t_rule *rule, t_symbol *left_symbol,
 					(char *)rule->right_symbols->next->content);
 		else
 			return ;
-	}
-}
-
-void	get_firsts(t_slr1 *data)
-{
-	t_symbol	*left;
-	t_symbol	*right;
-	t_list		*curr;
-	t_rule		*rule;
-	int			loops;
-
-	loops = 0;
-	while (loops++ < 2)
-	{
-		curr = data->rules;
-		while (curr)
-		{
-			rule = (t_rule *)curr->content;
-			left = get_symbol_from_name(data, rule->left_symbol);
-			right = get_symbol_from_name(data,
-					(char *)rule->right_symbols->content);
-			get_first_dfs(data, rule, left, right);
-			curr = curr->next;
-		}
 	}
 }

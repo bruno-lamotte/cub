@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
@@ -45,10 +57,10 @@ void	free_symbols(t_list *symbols)
 	ft_lstclear(&symbols, dummy_free);
 }
 
-void    free_rules(t_list *rules)
+void	free_rules(t_list *rules)
 {
-	t_list  *current;
-	t_rule  *rule;
+	t_list	*current;
+	t_rule	*rule;
 
 	current = rules;
 	while (current)
@@ -62,7 +74,7 @@ void    free_rules(t_list *rules)
 	ft_lstclear(&rules, dummy_free);
 }
 
-void    free_table(int **table)
+void	free_table(int **table)
 {
 	if (table)
 	{
@@ -72,7 +84,7 @@ void    free_table(int **table)
 	}
 }
 
-void    free_all(t_slr1 *data, int **table)
+void	free_all(t_slr1 *data, int **table)
 {
 	if (!data)
 		return ;

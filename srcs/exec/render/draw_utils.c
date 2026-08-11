@@ -1,5 +1,16 @@
-#include "cub.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 01:39:07 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "cub.h"
 
 unsigned int	blend_colors(unsigned int src, unsigned int dst,
 					unsigned char alpha)

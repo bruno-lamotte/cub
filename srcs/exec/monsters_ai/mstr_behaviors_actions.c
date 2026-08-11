@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mstr_behaviors_actions.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
@@ -22,8 +34,10 @@ void	mstr_scan_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 	(void)w;
 	m->alert_timer++;
 	old = m->dir.d.x;
-	m->dir.d.x = m->dir.d.x * cos(MSTR_ROTATION_STEP) - m->dir.d.y * sin(MSTR_ROTATION_STEP);
-	m->dir.d.y = old * sin(MSTR_ROTATION_STEP) + m->dir.d.y * cos(MSTR_ROTATION_STEP);
+	m->dir.d.x = m->dir.d.x * cos(MSTR_ROTATION_STEP)
+		- m->dir.d.y * sin(MSTR_ROTATION_STEP);
+	m->dir.d.y = old * sin(MSTR_ROTATION_STEP)
+		+ m->dir.d.y * cos(MSTR_ROTATION_STEP);
 }
 
 void	mstr_reloc_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
@@ -40,7 +54,8 @@ void	mstr_attack_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 	{
 		eng->player->hp -= MSTR_ATTACK_DAMAGE;
 		if (!eng->is_solver)
-			printf("Player attacked! HP remaining: %d/%d\n", eng->player->hp, PLAYER_MAX_HP);
+			printf("Player attacked! HP remaining: %d/%d\n",
+				eng->player->hp, PLAYER_MAX_HP);
 	}
 	mstr_chase(m, eng, w);
 }

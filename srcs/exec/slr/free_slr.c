@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_slr.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
@@ -15,7 +27,7 @@ static void	free_item(void *content)
 
 static void	free_transition(void *content)
 {
-	t_transition        *transition;
+	t_transition	*transition;
 
 	if (!content)
 		return ;
@@ -26,8 +38,8 @@ static void	free_transition(void *content)
 
 void	free_states(t_list *states)
 {
-	t_list  *current;
-	t_state *state;
+	t_list	*current;
+	t_state	*state;
 
 	current = states;
 	while (current)

@@ -1,17 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_pixels.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 static void	shift_p(double *p, t_ray_data *ray)
 {
 	if (ray->side == 0)
 	{
-		if (FP_TO_FLOAT(ray->ray_dir.fp.x) > 0)
+		if (fp_to_float(ray->ray_dir.fp.x) > 0)
 			p[1] += -0.01;
 		else
 			p[1] += 0.01;
 	}
 	else
 	{
-		if (FP_TO_FLOAT(ray->ray_dir.fp.y) > 0)
+		if (fp_to_float(ray->ray_dir.fp.y) > 0)
 			p[2] += -0.01;
 		else
 			p[2] += 0.01;
@@ -19,16 +31,16 @@ static void	shift_p(double *p, t_ray_data *ray)
 }
 
 static void	render_wall_pixel(t_draw *d, t_ray_data *ray,
-				float sh_n, float sh_a, int y, char *pixel_ptr)
+				float *sh, char *pixel_ptr)
 {
 	uint32_t	color;
 	int			tex_y;
 	int			c[3];
 
-	color = d->tex.color;
+	color = d->tex.u_val.color;
 	if (d->pixels)
 	{
-		tex_y = FP_TO_INT(d->tex_pos + (y - d->draw_start) * d->step);
+		tex_y = fp_to_int(d->tex_pos);
 		if (tex_y < 0)
 			tex_y = 0;
 		else if (tex_y >= d->tex.height)
@@ -38,10 +50,11 @@ static void	render_wall_pixel(t_draw *d, t_ray_data *ray,
 	c[0] = (((color >> 16) & 0xFF) >> (ray->side == 1));
 	c[1] = (((color >> 8) & 0xFF) >> (ray->side == 1));
 	c[2] = ((color & 0xFF) >> (ray->side == 1));
-	c[0] = clamp_color((int)((float)c[0] * sh_n + 255.0f * sh_a));
-	c[1] = clamp_color((int)((float)c[1] * sh_n));
-	c[2] = clamp_color((int)((float)c[2] * sh_n));
+	c[0] = clamp_color((int)((float)c[0] * sh[0] + 255.0f * sh[1]));
+	c[1] = clamp_color((int)((float)c[1] * sh[0]));
+	c[2] = clamp_color((int)((float)c[2] * sh[0]));
 	*(unsigned int *)pixel_ptr = (c[0] << 16) | (c[1] << 8) | c[2];
+	d->tex_pos += d->step;
 }
 
 static void	get_shading(t_worker *w, t_ray_data *ray, t_lut *lut, float *sh)
@@ -49,9 +62,9 @@ static void	get_shading(t_worker *w, t_ray_data *ray, t_lut *lut, float *sh)
 	double	p[3];
 	int		y;
 
-	p[0] = FP_TO_FLOAT(ray->perp_wall_dist);
-	p[1] = w->player->pos.d.x + p[0] * FP_TO_FLOAT(ray->ray_dir.fp.x);
-	p[2] = w->player->pos.d.y + p[0] * FP_TO_FLOAT(ray->ray_dir.fp.y);
+	p[0] = fp_to_float(ray->perp_wall_dist);
+	p[1] = w->player->pos.d.x + p[0] * fp_to_float(ray->ray_dir.fp.x);
+	p[2] = w->player->pos.d.y + p[0] * fp_to_float(ray->ray_dir.fp.y);
 	shift_p(p, ray);
 	y = clamp_idx((int)(p[0] * 10.0f));
 	sh[1] = clamp_float(get_alarm_light_at_point(p[1], p[2], w->blob,
@@ -78,7 +91,7 @@ void	render_pixels(t_draw *d, t_worker *w, t_ray_data *ray,
 		if (y < d->draw_start)
 			*(unsigned int *)pixel_ptr = 0x000000;
 		else
-			render_wall_pixel(d, ray, sh[0], sh[1], y, pixel_ptr);
+			render_wall_pixel(d, ray, sh, pixel_ptr);
 		pixel_ptr += line_len;
 	}
 }

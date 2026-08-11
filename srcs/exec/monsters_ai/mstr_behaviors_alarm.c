@@ -1,4 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mstr_behaviors_alarm.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
+
+void	mstr_patrol_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
+void	mstr_chase_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
+void	mstr_scan_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
+void	mstr_reloc_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
+void	mstr_attack_behavior(t_monster_rt *m, t_engine *eng, t_worker *w);
 
 void	mstr_alarm_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 {
@@ -9,7 +27,8 @@ void	mstr_alarm_behavior(t_monster_rt *m, t_engine *eng, t_worker *w)
 		mstr_go_to_alarm(m, eng, alarm_pos, w);
 }
 
-static void	bind_behavior_to_state(t_slr1 *slr, int state_id, t_behavior_fn func)
+static void	bind_behavior_to_state(t_slr1 *slr, int state_id,
+				t_behavior_fn func)
 {
 	slr->state_behaviors[state_id] = func;
 }

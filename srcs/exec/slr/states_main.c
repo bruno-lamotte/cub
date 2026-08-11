@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   states_main.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 01:39:07 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <stdlib.h>
 
@@ -80,11 +92,11 @@ void	get_new_state(t_slr1 *data, t_state *current_state,
 
 void	go_to(t_slr1 *data, t_state *state)
 {
-	t_list      *items;
-	t_item      *item;
-	t_symbol    *symbol;
-	t_list      *symbols_already_parsed;
-	t_state     *new_state;
+	t_list		*items;
+	t_item		*item;
+	t_symbol	*symbol;
+	t_list		*symbols_already_parsed;
+	t_state		*new_state;
 
 	items = state->items;
 	symbols_already_parsed = NULL;

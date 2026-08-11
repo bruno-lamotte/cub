@@ -1,20 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   light_los_utils.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
-int	check_los_shadow(float mx, float my, float px, float py)
+int	check_los_shadow(t_vec2 m, t_vec2 p)
 {
 	float	fx;
 	float	fy;
 
-	fx = px - (int)px;
-	fy = py - (int)py;
-	if (fabsf(fx - 0.99f) < 1e-6f && mx >= (int)px + 1)
+	fx = (float)p.d.x - (int)p.d.x;
+	fy = (float)p.d.y - (int)p.d.y;
+	if (fabsf(fx - 0.99f) < 1e-6f && (float)m.d.x >= (int)p.d.x + 1)
 		return (0);
-	if (fabsf(fx - 0.01f) < 1e-6f && mx <= (int)px)
+	if (fabsf(fx - 0.01f) < 1e-6f && (float)m.d.x <= (int)p.d.x)
 		return (0);
-	if (fabsf(fy - 0.99f) < 1e-6f && my >= (int)py + 1)
+	if (fabsf(fy - 0.99f) < 1e-6f && (float)m.d.y >= (int)p.d.y + 1)
 		return (0);
-	if (fabsf(fy - 0.01f) < 1e-6f && my <= (int)py)
+	if (fabsf(fy - 0.01f) < 1e-6f && (float)m.d.y <= (int)p.d.y)
 		return (0);
 	return (1);
 }

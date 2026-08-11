@@ -4,14 +4,14 @@ TEXTURES
 	text_west	 : HEXA, 0xBC6C25
 	text_south	 : HEXA, 0x8B4513
 	text_est	 : HEXA, 0xF4A261
-	text_floor	 : PATH, ./tex.xpm
-	text_ceiling : PATH, ./tex.xpm
-	text_front	 : PATH, ./tex.xpm
-	text_back	 : PATH, ./tex.xpm
-	text_side	 : HEXA, 0xfff000
-	text_player	 : PATH, ./tex.xpm
+	text_floor	 : PATH, ./tex/tex.xpm
+	text_ceiling : PATH, ./tex/tex.xpm
+	text_front	 : PATH, ./tex/tex.xpm
+	text_back	 : PATH, ./tex/tex.xpm
+	text_side	 : PATH, ./tex/tex.xpm
+	text_player	 : PATH, ./tex/tex.xpm
 	monster_tex  : HEXA, 0x000fff
-	tree_tex	 : PATH, ./tex.xpm
+	tree_tex	 : PATH, ./tex/tex.xpm
 }
 WALLS
 {

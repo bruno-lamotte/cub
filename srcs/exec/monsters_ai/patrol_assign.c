@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   patrol_assign.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
@@ -52,14 +64,16 @@ static int	find_close_bottleneck(t_engine *eng, t_monster_rt *m,
 void	assign_new_patrol_target(t_monster_rt *m, t_engine *eng, t_worker *w)
 {
 	t_vec2		cells[1024];
+	t_vec2		start;
 	int			tot;
 	int			idx;
 	int			ws;
 
 	ws = m->has_guard_pos
 		&& is_bottleneck_cell(eng, (int)m->guard.d.x, (int)m->guard.d.y);
-	tot = get_reachable_cells(eng, (t_vec2){.i = {(int)m->pos.d.x,
-				(int)m->pos.d.y}}, cells, w);
+	start.i.x = (int)m->pos.d.x;
+	start.i.y = (int)m->pos.d.y;
+	tot = get_reachable_cells(eng, start, cells, w);
 	idx = -1;
 	if (!m->has_guard_pos || ws)
 		idx = find_close_bottleneck(eng, m, cells, tot);

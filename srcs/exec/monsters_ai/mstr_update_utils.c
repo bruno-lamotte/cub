@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mstr_update_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 static void	handle_auto_actions(t_engine *eng, t_monster_rt *m)
@@ -12,8 +24,10 @@ void	update_single_monster(t_monster_rt *m, t_engine *eng, t_worker *w)
 	int				is_in_alarm;
 	t_behavior_fn	behavior;
 
-	d2 = (eng->player->pos.d.x - m->pos.d.x) * (eng->player->pos.d.x - m->pos.d.x)
-		+ (eng->player->pos.d.y - m->pos.d.y) * (eng->player->pos.d.y - m->pos.d.y);
+	d2 = (eng->player->pos.d.x - m->pos.d.x)
+		* (eng->player->pos.d.x - m->pos.d.x)
+		+ (eng->player->pos.d.y - m->pos.d.y)
+		* (eng->player->pos.d.y - m->pos.d.y);
 	is_in_alarm = (m->state == MSTR_STATE_ALARM);
 	if (eng->alarm_triggered && !is_in_alarm)
 	{
@@ -27,23 +41,16 @@ void	update_single_monster(t_monster_rt *m, t_engine *eng, t_worker *w)
 	}
 	handle_auto_actions(eng, m);
 	run_grammar_transitions(m, eng, d2, detect_player(m, eng));
-	behavior = eng->slr->state_behaviors[m->state_stack[m->state_stack_top - 1]];
+	behavior = eng->slr->state_behaviors[
+		m->state_stack[m->state_stack_top - 1]];
 	if (behavior)
 		behavior(m, eng, w);
 }
 
 void	print_monsters_debug(t_monster_rt *mstr, int count)
 {
-	int	k;
-
-	k = -1;
-	while (++k < count)
-	{
-		printf("Monster %d: pos=(%.2f, %.2f), guard=(%.2f, %.2f), ",
-			k, mstr[k].pos.d.x, mstr[k].pos.d.y, mstr[k].guard.d.x, mstr[k].guard.d.y);
-		printf("state=%d, stack_top=%d, timer=%d\n",
-			mstr[k].state, mstr[k].state_stack_top, mstr[k].alert_timer);
-	}
+	(void)mstr;
+	(void)count;
 }
 
 static void	disarm_single_alarm(t_engine *eng, t_light *l)

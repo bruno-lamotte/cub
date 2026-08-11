@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   interaction.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 00:33:49 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 
 void	update_global_alarm_state(t_engine *eng)
@@ -26,7 +38,7 @@ static int	is_near_t(t_engine *eng, int x, int y)
 
 	flags = get_map_flags(eng->blob);
 	occ = get_map_occ_ids(eng->blob);
-	w = get_map_width(eng->blob);
+	w = get_map_width(get_blob_hdr(eng->blob));
 	if (!(flags[y * w + x] & CELL_HAS_OBJ))
 		return (0);
 	if (eng->data->obj_defs[occ[y * w + x]].symbol != 'T')

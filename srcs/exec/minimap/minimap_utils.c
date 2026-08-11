@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minimap_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: blamotte <blamotte@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/08/11 00:33:49 by blamotte          #+#    #+#             */
+/*   Updated: 2026/08/11 02:00:00 by blamotte         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub.h"
 #include <math.h>
 
-# define MINIMAP_DEFAULT_SCALE 0.0667
-# define MINIMAP_BORDER_PAD 6
+#define MINIMAP_DEFAULT_SCALE 0.0667
+#define MINIMAP_BORDER_PAD 6
 
 double	get_minimap_scale(t_engine *eng, int radius)
 {
@@ -35,7 +47,7 @@ unsigned int	get_obj_color(t_engine *eng, int idx)
 }
 
 unsigned int	get_door_cell_color(t_engine *eng, t_vec2 c,
-	double g[2], int w)
+					double g[2], int w)
 {
 	double	ratio;
 	double	frac[2];
